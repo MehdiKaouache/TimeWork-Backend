@@ -1,0 +1,9 @@
+### create user test
+POST http://localhost:3000/users
+content-type: application/json
+
+{
+    "email": "6290712@cegepmv.ca",
+    "password": "password",
+    "name" : "kersen"
+}
