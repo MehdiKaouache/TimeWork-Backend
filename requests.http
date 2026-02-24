@@ -7,6 +7,6 @@ content-type: application/json
     "password": "1234"
 }
 
-### test 
-GET http://localhost:3000/users
+### test all useres
+GET http://localhost:3000/1
 

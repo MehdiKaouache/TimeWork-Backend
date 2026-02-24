@@ -1,3 +1,5 @@
+// Jeudi 19 fevrier 2026
+
 1- npm install @nestjs/typeorm typeorm sqlite3 => Commande pour installer les librairies sql3 et typeorm pour nest.js // TypeOrm permet de faire la lisaison backend et base de donne
 
 
@@ -79,3 +81,44 @@ export class UsersModule {}
 
 
 7- faire la validation avec le dto
+
+import { IsEmail, IsString, IsNotEmpty } from "class-validator";
+
+export class createUser {
+    @IsEmail()
+    email: string;
+
+    @IsString()
+    @IsNotEmpty()
+    password: string;
+}
+
+
+
+
+
+// Mardi 24 fevrier 2026
+
+Maniere de blocker laffichage du mdp des utilisateurs:
+
+mauvaise maniere :
+<!-- On doit mettre un decorateur @Exclude dans l'entity user =>
+
+    @Column(/*Ajouter des trucs ici*/)
+*** // @Exclude()
+    password: string;
+
+On block le password partout (on peut pas y acceder ) => 
+
+    // app.useGlobalInterceptors(
+    //   new ClassSerializerInterceptor(app.get(Reflector))
+    // );
+
+on block le password pour la route (le mdp est cacher seulement pour la route appeler dans le controller) =>
+
+*** // @UseInterceptors(ClassSerializerInterceptor)
+    @Get('/find/:id')
+    findUser(@Param('id') id : string) {
+        return this.usersService.findUser(parseInt(id));
+    } -->
+
