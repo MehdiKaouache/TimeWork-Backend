@@ -1,9 +1,14 @@
 ### create user test
-POST http://localhost:3000/users
+POST http://localhost:3000/users/signup
 content-type: application/json
 
 {
-    "email": "6290712@cegepmv.ca",
-    "password": "password",
-    "name" : "kersen"
+    "email": "nylekersenjoseph@gmail.com",
+    "password": "1234"
 }
+
+### test all users
+GET http://localhost:3000/users
+
+### get 1 user
+GET http://localhost:3000/users/12
