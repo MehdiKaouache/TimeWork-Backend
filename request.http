@@ -1,0 +1,11 @@
+### create user test
+POST http://localhost:3000/users/signup
+content-type: application/json
+
+{
+    "email": "email@email.com",
+    "password": "1234"
+}
+
+### test 
+GET http://localhost:3000/users/6
