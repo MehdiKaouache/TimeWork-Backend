@@ -28,8 +28,6 @@ export class UsersService {
 
    async findAllUsers() {
         return await this.userRepository.find();
-
-        
     }
 
     deleteUser() {}
