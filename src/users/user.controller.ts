@@ -1,22 +1,42 @@
-import { Body, Controller, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Session, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { CreateUserDto } from './dtos/create-users.dto';
-import { updateUser } from './dtos/update-user.dto';
+import { UpdateUser } from './dtos/update-user.dto';
 import { Serialize } from '../interceptor/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
+import { AuthService } from './auth.service';
 
 @Controller('users')
 export class UsersController {
 
-    constructor(private usersService : UsersService) {}
+    constructor(private usersService : UsersService, private authService: AuthService) {}
 
     @Post('/signup')
-    createUser(@Body() body : CreateUserDto) {
-        return this.usersService.createUser(body.email, body.password)
+    async createUser(@Body() body : CreateUserDto, @Session() session : any) {
+        const user = await this.authService.signUp(body.email, body.password);
+        session.userId = user.id;
+        return user;
+    }
+
+    @Post('/signin')
+    async signIn(@Body() body : CreateUserDto, @Session() session : any) {
+        const user = await this.authService.signIn(body.email, body.password);
+        session.userId = user.id;
+        return user;
+    }
+
+    @Post('/signout')
+    signOut(@Session() session : any) {
+        session.userId = null;
+    }
+
+    @Get('/whoami')
+    whoAmI(@Session() session : any) {
+        return this.authService.whoAmI(session.userId);
     }
 
     @Patch('/update/:id')
-    updateUser(@Param('id') id : string, @Body() body : updateUser) {
+    updateUser(@Param('id') id : string, @Body() body : UpdateUser) {
         return this.usersService.updateUser(parseInt(id), body);
     }
 
@@ -32,5 +52,9 @@ export class UsersController {
         return this.usersService.findAllUsers();
     }
 
+    @Delete('/:id')
+    deleteUser(@Param('id') id : string) {
+        return this.usersService.deleteUser(parseInt(id));
+    }
     
 }
