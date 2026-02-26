@@ -12,8 +12,8 @@ export class UsersService {
     ) {}
 
     createUser(email : string, password : string) {
-            const user = this.userRepository.create({email, password});
-            return this.userRepository.save(user)
+        const user = this.userRepository.create({email, password});
+        return this.userRepository.save(user)
     }
 
     async findUser(id : number){
@@ -26,9 +26,8 @@ export class UsersService {
         return user;
     }
 
-   async findAllUsers() {
-        return await this.userRepository.find();
-
+    async findAllUsers() {
+        return await this.userRepository.find()
         
     }
 
@@ -43,5 +42,9 @@ export class UsersService {
 
         Object.assign(user, attrs);
         return this.userRepository.save(user)
+    }
+
+    async findAllUsersByEmail(email : string){
+        return await this.userRepository.findBy({email})
     }
 }

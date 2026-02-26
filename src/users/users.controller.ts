@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Session, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import UpdateUserDTO  from './dtos/update-user.dto';
@@ -6,15 +6,35 @@ import UpdateUserDTO  from './dtos/update-user.dto';
 import SerializeInterceptor from 'src/interceptors/serialize.interceptor';
 import UserDto from './dtos/user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { AuthService } from './auth.service';
 
 @Controller('users')
 export class UsersController {
 
-    constructor(private usersService : UsersService) {}
+    constructor(private usersService : UsersService, private authService: AuthService) {}
 
     @Post('/signup')
-    createUser(@Body() body : CreateUserDTO) {
-        return this.usersService.createUser(body.email, body.password)
+    async createUser(@Body() body : CreateUserDTO, @Session() session: any) {
+        const user = await this.authService.signup(body.email, body.password)
+        session.userId = user.id
+        return user
+    }
+
+    @Post('/signin')
+    async signIn(@Body() body : CreateUserDTO, @Session() session: any) {
+        const user = await this.authService.signin(body.email, body.password)
+        session.userId = user.id
+        return user
+    }
+
+    @Get("/whoami")
+    async whoami(@Session() session: any){
+        return await this.authService.whoAmI(session.userId)
+    }
+
+    @Post("signout")
+    signout(@Session() session: any){
+        session.userId = null
     }
 
     @Patch('/:id')
