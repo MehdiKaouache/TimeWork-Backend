@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Session, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Session, UseGuards } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { CreateUserDto } from './dtos/create-users.dto';
 import { UpdateUser } from './dtos/update-user.dto';
 import { Serialize } from '../interceptor/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorator/currentUser.decorator';
+import { AuthGuard } from './guards/auth.guards';
+import { AdminGuard } from './guards/admin.guard';
 
 @Controller('users')
 export class UsersController {
@@ -22,6 +25,7 @@ export class UsersController {
     async signIn(@Body() body : CreateUserDto, @Session() session : any) {
         const user = await this.authService.signIn(body.email, body.password);
         session.userId = user.id;
+        session.admin = user.admin;
         return user;
     }
 
@@ -30,9 +34,10 @@ export class UsersController {
         session.userId = null;
     }
 
+    @UseGuards(AuthGuard)
     @Get('/whoami')
-    whoAmI(@Session() session : any) {
-        return this.authService.whoAmI(session.userId);
+    whoAmI(@CurrentUser() user : any) {
+        return user;
     }
 
     @Patch('/update/:id')
@@ -40,13 +45,15 @@ export class UsersController {
         return this.usersService.updateUser(parseInt(id), body);
     }
 
-    // @UseInterceptors(SerializeInterceptor(UserDto))
+    @UseGuards(AuthGuard)
     @Serialize(UserDto)
     @Get('/:id')
     findUser(@Param('id') id : string) {
         return this.usersService.findUser(parseInt(id));
     }
 
+    @UseGuards(AdminGuard)
+    @UseGuards(AuthGuard)
     @Get()
     findAllUsers() {
         return this.usersService.findAllUsers();

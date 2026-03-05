@@ -3,7 +3,7 @@ POST http://localhost:3000/users/signup
 content-type: application/json
 
 {
-    "email": "email@yahoo.com",
+    "email": "email@gmaill.com",
     "password": "1234"
 }
 
@@ -21,7 +21,7 @@ POST http://localhost:3000/users/signin
 content-type: application/json
 
 {
-    "email": "email@yahoo.com",
+    "email": "email@gmaill.com",
     "password": "1234"
 }
 
