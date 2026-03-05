@@ -3,7 +3,7 @@ POST http://localhost:3000/users/signup
 content-type: application/json
 
 {
-    "email": "nylekersenjoseph@gmail.com",
+    "email": "6290712@cegepmv.ca",
     "password": "1234"
 }
 
@@ -26,4 +26,7 @@ GET http://localhost:3000/users/1
 GET http://localhost:3000/users/whoami
 
 ### deconexion d'un user
-POST  http://localhost:3000/users/signout
+POST http://localhost:3000/users/signout
+
+### supprimer un user
+DELETE http://localhost:3000/users/delete/2
