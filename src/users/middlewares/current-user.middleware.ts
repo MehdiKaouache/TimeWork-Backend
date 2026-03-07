@@ -1,6 +1,5 @@
 import { Injectable, NestMiddleware } from "@nestjs/common";
-import { UsersService } from "../users.service";
-
+import { UsersService } from "../services/users.service";
 @Injectable()
 export class CurrentUserMiddleware implements NestMiddleware{
 

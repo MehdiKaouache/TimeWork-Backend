@@ -9,7 +9,7 @@ import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
 import { CurrentUserInterceptor } from './interceptors/currentUser.interceptor';
 import { User } from './user.entity';
-import { CurrentUser } from './decorator/currentUser.decorator';
+import { CurrentUser } from './decorators/currentUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { AdminGuard } from 'src/guards/admin.guard';
 

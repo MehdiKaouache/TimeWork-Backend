@@ -7,6 +7,7 @@ import { User } from './user.entity';
 import { CurrentUserInterceptor } from './interceptors/currentUser.interceptor';
 import { APP_INTERCEPTOR } from "@nestjs/core"
 import { CurrentUserMiddleware } from './middlewares/current-user.middleware';
+import { EmployeeController } from './controllers/employees/employees.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
@@ -17,7 +18,7 @@ import { CurrentUserMiddleware } from './middlewares/current-user.middleware';
     //   useClass: CurrentUserInterceptor,
     // }
   ],
-  controllers: [UsersController]
+  controllers: [UsersController, EmployeeController]
 })
 
 export class UsersModule implements NestModule{
