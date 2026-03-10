@@ -1,6 +1,5 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString, Min, MinLength } from 'class-validator'
-import { UserRole } from '../user.entity'
-import { Type } from 'class-transformer'
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator'
+
 
 export class CreateUserDTO { 
 
@@ -18,12 +17,4 @@ export class CreateUserDTO {
     @IsString()
     @MinLength(12)
     password : string
-
-    @IsEnum(UserRole)
-    role : UserRole
-
-    @Type(() => Number)
-    @IsNumber()
-    @Min(21)
-    hourlyRate : number
 }

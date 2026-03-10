@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '../user.entity';
+import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -8,16 +8,22 @@ export class UsersService {
 
     constructor(
         @InjectRepository(User)
-        private userRepository: Repository<User>,
+        private usersRepository: Repository<User>,
     ) {}
 
-    createUser(email : string, password : string) {
-        const user = this.userRepository.create({email, password});
-        return this.userRepository.save(user)
+    createUser(firstName : string, lastName: string, email : string, password : string) {
+        const user = this.usersRepository.create({
+            firstName,
+            lastName,
+            email,
+            password
+        });
+        
+        return this.usersRepository.save(user)
     }
 
     async findUser(id : number){
-        const user = await this.userRepository.findOneBy({id});
+        const user = await this.usersRepository.findOneBy({id});
         
         if (!user) {
             throw new NotFoundException("User not found");
@@ -27,25 +33,34 @@ export class UsersService {
     }
 
     async findAllUsers() {
-        return await this.userRepository.find()   
+        return await this.usersRepository.find()   
     }
 
-    deleteUser(id: number) {
-        
+    async deleteUser(id: number) {
+
+        const user = await this.usersRepository.findOneBy({ id });
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        await this.usersRepository.remove(user);
+
+        return { message: "User deleted successfully" };
     }
 
     async updateUser(id : number, attrs : Partial<User>) {
-        const user = await this.userRepository.findOneBy({id});
+        const user = await this.usersRepository.findOneBy({id});
 
         if (!user) {
             throw new NotFoundException("User not found");
         }
 
         Object.assign(user, attrs);
-        return this.userRepository.save(user)
+        return this.usersRepository.save(user)
     }
 
-    async findAllUsersByEmail(email : string){
-        return await this.userRepository.findBy({email})
+    async findUserByEmail(email : string){
+        return await this.usersRepository.findOneBy({email})
     }
 }

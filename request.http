@@ -1,32 +1,60 @@
-### signup user
-POST http://localhost:3000/users/signup
-content-type: application/json
+### Create user
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
 
 {
-    "email": "6290712@cegepmv.ca",
-    "password": "1234"
+  "firstName": "Anas",
+  "lastName": "Benguade",
+  "email": "anas@test.com",
+  "password": "password123456"
 }
 
-### sign in
-POST http://localhost:3000/users/signin
-content-type: application/json
+### Create 2nd User
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
 
 {
-    "email": "nyle8765@gmail.com",
-    "password": "1234"
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@test.com",
+  "password": "test123456789"
 }
 
-### test all users
+### Login
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "anas@test.com",
+  "password": "password123456"
+}
+
+### Login wrong password
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "anas@test.com",
+  "password": "wrongpassword"
+}
+
+### Test protected route without token
+GET http://localhost:3000/auth/whoami
+
+### Who am I
+GET http://localhost:3000/auth/whoami
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYW5hc0B0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiRU1QMjEzMDYiLCJpYXQiOjE3NzMxMjA1OTcsImV4cCI6MTc3MzIwNjk5N30.S8AxE8oZyf7KTUMjmBkwOVhBKcb21FyNoQuMZ8BAzDQ
+
+### Get all users
 GET http://localhost:3000/users
 
-### get 1 user
-GET http://localhost:3000/users/1
+### Update user
+PATCH http://localhost:3000/users/1
+Content-Type: application/json
 
-### get user connecté
-GET http://localhost:3000/users/whoami
+{
+  "firstName": "Anas"
+}
 
-### deconexion d'un user
-POST http://localhost:3000/users/signout
-
-### supprimer un user
-DELETE http://localhost:3000/users/delete/2
+### Delete user
+DELETE http://localhost:3000/users/3
