@@ -1,4 +1,4 @@
-import { UsersService } from 'src/users/services/users.service';
+import { UsersService } from 'src/users/users.service';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { promisify } from 'util';

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '../entities/user.entity';
+import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -41,7 +41,7 @@ export class UsersService {
         const user = await this.usersRepository.findOneBy({ id });
 
         if (!user) {
-            throw new Error("User not found");
+            throw new NotFoundException("User not found");
         }
 
         await this.usersRepository.remove(user);
