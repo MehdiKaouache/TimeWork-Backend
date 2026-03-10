@@ -20,7 +20,7 @@ export class AuthService {
         private jwtService: JwtService
     ){}
 
-    async signup(firstName: string, lastName: string, email: string, password: string){
+    async signup(firstName: string, lastName: string, email: string, password: string) {
 
         firstName = firstName.trim();
         lastName = lastName.trim();
@@ -28,7 +28,7 @@ export class AuthService {
         
         const existingUser = await this.usersService.findUserByEmail(email);
         
-        if(existingUser){
+        if(existingUser) {
             throw new BadRequestException("Email already in use");
         }
 
@@ -52,11 +52,11 @@ export class AuthService {
         }
     }
 
-    async signin(email: string, password: string){
-        // 1. find user by email
+    async signin(email: string, password: string) {
+
         const user = await this.usersService.findUserByEmail(email)
 
-        if(!user){
+        if(!user) {
             throw new NotFoundException("The email or password is not valide")
         }
 
@@ -65,9 +65,10 @@ export class AuthService {
         // }
 
         const [salt, storedHash] = user.password.split(".")
+
         const hash = (await scrypt(password, salt, 32)) as Buffer
 
-        if (hash.toString("hex") !== storedHash){
+        if (hash.toString("hex") !== storedHash) {
             throw new BadRequestException("The email or password is not valide")
         }
 
@@ -84,12 +85,14 @@ export class AuthService {
         }
     }
 
-    async whoAmI(userId: number){
-        if(!userId){
+    async whoAmI(userId: number) {
+
+        if(!userId) {
             return null
         }
         
         const user = await this.usersService.findUser(userId)
+        
         return user
     }
 }

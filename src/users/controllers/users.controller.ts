@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post, Session, UseGuards, UseInterceptors, Delete } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
-import { UpdateUserDTO }  from 'src/users/dtos/update-user.dto';
 import { UserResponseDto } from 'src/users/dtos/user-response.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
-
+import { UpdateUserDTO }  from 'src/users/dtos/update-user.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('users')
 export class UsersController {

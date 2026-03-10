@@ -56,7 +56,7 @@ export class User {
     @Exclude()
     @Column({
         type : 'varchar',
-        length : 255,
+        length : 50,
         nullable : false
     })
     password: string;
