@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { SignupDTO } from './dtos/signup.dto';
 import { SigninDTO } from './dtos/signin.dto';
+import { RefreshTokenDTO } from './dtos/refresh-token.dto';
+import { UpdateLoginDTO } from './dtos/update-login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +32,34 @@ export class AuthController {
     @Post('/signin')
     signin(@Body() body: SigninDTO) {
         return this.authService.signin(body.email, body.password);
+    }
+
+    @Post('/refresh')
+    refreshToken(@Body() body: RefreshTokenDTO) {
+        return this.authService.refreshToken(body.refreshToken);
+    }
+
+     // pour le logout on va juste supprimer 
+    // le token du localstorage dans le frontend
+    // localStorage.removeItem("token")
+
+    @Post('/logout')
+    logout() {
+        return {
+            message: "Logged out successfully"
+        };
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('/update-login')
+    updateLogin(
+        @Request() req: any,
+        @Body() body: UpdateLoginDTO
+    ) {
+        return this.authService.updateLogin(
+            req.user.userId,
+            body
+        );
     }
 
     // on va utilise le localstorage dans le frontend pour stocker le token 

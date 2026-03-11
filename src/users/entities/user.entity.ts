@@ -94,7 +94,9 @@ export class User {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    // Avant d'insérer un nouvel utilisateur dans la base de données, cette méthode génère un numéro d'employé unique en fonction du rôle de l'utilisateur (manager, assistant manager ou employé) et l'assigne à la propriété employeeNumber de l'entité User.
+    // Avant d'insérer un nouvel utilisateur dans la base de données, 
+    // cette méthode génère un numéro d'employé unique en fonction du rôle de l'utilisateur 
+    // (manager, assistant manager ou employé) et l'assigne à la propriété employeeNumber de l'entité User.
     @BeforeInsert()
     generateEmployeeNumber() {
         const randomNumber = Math.floor(10000 + Math.random() * 90000);

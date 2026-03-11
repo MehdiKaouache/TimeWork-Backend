@@ -12,6 +12,7 @@ export class UsersService {
     ) {}
 
     createUser(firstName : string, lastName: string, email : string, password : string) {
+
         const user = this.usersRepository.create({
             firstName,
             lastName,
@@ -19,10 +20,11 @@ export class UsersService {
             password
         });
         
-        return this.usersRepository.save(user)
+        return this.usersRepository.save(user);
     }
 
-    async findUser(id : number){
+    async findUser(id : number) {
+
         const user = await this.usersRepository.findOneBy({id});
         
         if (!user) {
@@ -33,7 +35,14 @@ export class UsersService {
     }
 
     async findAllUsers() {
-        return await this.usersRepository.find()   
+
+        const users = await this.usersRepository.find();
+        
+        if (!users || users.length === 0) {
+            throw new NotFoundException("No users found");
+        }
+
+        return users;
     }
 
     async deleteUser(id: number) {
@@ -49,18 +58,58 @@ export class UsersService {
         return { message: "User deleted successfully" };
     }
 
-    async updateUser(id : number, attrs : Partial<User>) {
+    async updateUser(
+        id : number, 
+        body : {
+            firstName?: string,
+            lastName?: string
+        }
+    ){
+
         const user = await this.usersRepository.findOneBy({id});
 
         if (!user) {
             throw new NotFoundException("User not found");
         }
 
-        Object.assign(user, attrs);
-        return this.usersRepository.save(user)
+        if (body.firstName !== undefined) {
+            user.firstName = body.firstName;
+        }
+
+        if (body.lastName !== undefined) {
+            user.lastName = body.lastName;
+        }
+
+        return this.usersRepository.save(user);
     }
 
-    async findUserByEmail(email : string){
-        return await this.usersRepository.findOneBy({email})
+    async findUserByEmail(email : string) {
+
+        const user = await this.usersRepository.findOneBy({email});
+
+        if (!user) {
+            throw new NotFoundException("No user found with this email");
+        }
+
+        return user;
+    }
+
+    async updateUserLogin(id: number, email?: string, password?: string) {
+
+        const user = await this.findUser(id);
+
+        if (!user) {
+            throw new NotFoundException("User not found");
+        }
+
+        if (email !== undefined) {
+            user.email = email;
+        }
+        
+        if (password !== undefined) {
+            user.password = password;
+        }
+
+        return this.usersRepository.save(user);
     }
 }
