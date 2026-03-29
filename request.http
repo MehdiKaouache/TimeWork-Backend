@@ -43,7 +43,7 @@ GET http://localhost:3000/auth/whoami
 
 ### Who am I
 GET http://localhost:3000/auth/whoami
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiYW5hc0B0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiRU1QNzU3MDUiLCJpYXQiOjE3NzQ3OTcwNDAsImV4cCI6MTc3NDg4MzQ0MH0.GtZwNIabUefLDN0-3SYqjvNS53AUISTwIGL9AL3mvrE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYW5hc0B0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiRU1QNDc1NzYiLCJpYXQiOjE3NzQ4MTc4MzcsImV4cCI6MTc3NDkwNDIzN30.JikIqVR1KnPXq37OR3gIkKB71-8D42JTjTJpSmuZFyQ
 
 ### Get all users
 GET http://localhost:3000/users

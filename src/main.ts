@@ -3,8 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from "@nestjs/common";
 
 
-const cookieSession = require("cookie-session")
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -12,12 +10,6 @@ async function bootstrap() {
     origin: 'http://localhost:5173',
     credentials: true,
   });
-
-  app.use(cookieSession({
-    keys: ["mysecretkey"],
-    httpOnly: true,
-    secure: false,
-  }))
 
   app.useGlobalPipes(
     new ValidationPipe({
