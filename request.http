@@ -16,7 +16,7 @@ Content-Type: application/json
 {
   "firstName": "Test",
   "lastName": "User",
-  "email": "test@test.com",
+  "email": "test2@test.com",
   "password": "test123456789"
 }
 
@@ -43,18 +43,18 @@ GET http://localhost:3000/auth/whoami
 
 ### Who am I
 GET http://localhost:3000/auth/whoami
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYW5hc0B0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiRU1QMjEzMDYiLCJpYXQiOjE3NzMxMjA1OTcsImV4cCI6MTc3MzIwNjk5N30.S8AxE8oZyf7KTUMjmBkwOVhBKcb21FyNoQuMZ8BAzDQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoiYW5hc0B0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiRU1QNzU3MDUiLCJpYXQiOjE3NzQ3OTcwNDAsImV4cCI6MTc3NDg4MzQ0MH0.GtZwNIabUefLDN0-3SYqjvNS53AUISTwIGL9AL3mvrE
 
 ### Get all users
 GET http://localhost:3000/users
 
 ### Update user
-PATCH http://localhost:3000/users/1
+PATCH http://localhost:3000/users/5
 Content-Type: application/json
 
 {
-  "firstName": "Anas"
+  "firstName": "Adam"
 }
 
 ### Delete user
-DELETE http://localhost:3000/users/3
+DELETE http://localhost:3000/users/4

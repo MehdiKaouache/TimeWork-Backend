@@ -58,8 +58,7 @@ export class UsersService {
         return { message: "User deleted successfully" };
     }
 
-    async updateUser(
-        id : number, 
+    async updateUser(id : number, 
         body : {
             firstName?: string,
             lastName?: string
@@ -86,10 +85,6 @@ export class UsersService {
     async findUserByEmail(email : string) {
 
         const user = await this.usersRepository.findOneBy({email});
-
-        if (!user) {
-            throw new NotFoundException("No user found with this email");
-        }
 
         return user;
     }
