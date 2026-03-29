@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique, BeforeInsert, BeforeUpdate, In, Index } from 'typeorm';
-import { User } from '../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { DayOfWeek } from 'src/common/enums/day-of-week.enum';
 
 // L'entité Availability représente la disponibilité d'un utilisateur pour chaque jour de la semaine, 

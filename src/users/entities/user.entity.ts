@@ -1,7 +1,7 @@
 import { UserRole } from "src/common/enums/user-roles.enum";
 import { UserStatus } from "src/common/enums/user-status.enum";
-import { LeaveRequest } from "../leave-request/leave-request.entity";
-import { Availability } from "../availability/availability.entity";
+import { LeaveRequest } from "../../leave-request/entities/leave-request.entity";
+import { Availability } from "../../availability/entities/availability.entity";
 import { Exclude } from "class-transformer";
 
 

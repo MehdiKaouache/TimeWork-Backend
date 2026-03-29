@@ -3,10 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/user.entity';
+import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { LeaveRequest } from './leave-request/leave-request.entity';
-import { Availability } from './availability/availability.entity';
+import { LeaveRequest } from './leave-request/entities/leave-request.entity';
+import { Availability } from './availability/entities/availability.entity';
+import { AvailabilityModule } from './availability/availability.module';
+import { LeaveRequestModule } from './leave-request/leave-request.module';
+
 @Module({
   imports: [TypeOrmModule.forRoot(
     {
@@ -15,7 +18,7 @@ import { Availability } from './availability/availability.entity';
       entities: [User, LeaveRequest, Availability],
       synchronize: true,
     }
-  ), UsersModule, AuthModule ],
+  ), UsersModule, AuthModule, AvailabilityModule, LeaveRequestModule ],
   controllers: [AppController],
   providers: [AppService],
 })
