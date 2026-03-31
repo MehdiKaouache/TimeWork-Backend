@@ -1,32 +1,29 @@
-import { Body, Controller, Get, Param, Patch, Post, Session, UseGuards, UseInterceptors, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Session, UseGuards, UseInterceptors, Delete, ParseIntPipe } from '@nestjs/common';
 import { UserResponseDto } from 'src/users/dtos/user-response.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
-import { UpdateUserDTO }  from 'src/users/dtos/update-user.dto';
+import { UpdateUserInfoDTO }  from 'src/users/dtos/update-user.dto';
 import { UsersService } from 'src/users/users.service';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
 
-    constructor(private usersService : UsersService) {}
+    constructor(private readonly usersService : UsersService) {}
 
-    @Patch('/:id')
-    updateUser(@Param('id') id : string, @Body() body : UpdateUserDTO) {
-        return this.usersService.updateUser(parseInt(id), body);
+    // @Serialize(UserResponseDto)
+    @Get(':id')
+    findOne(@Param('id', ParseIntPipe) id : number) {
+        return this.usersService.findOne(id);
     }
 
-    @Serialize(UserResponseDto)
-    @Get('/:id')
-    findUser(@Param('id') id : string) {
-        return this.usersService.findUser(parseInt(id));
-    }
-
-    @Get()
-    findAllUsers() {
-        return this.usersService.findAllUsers();
+    @Patch(':id')
+    updateUser(@Param('id', ParseIntPipe) id : number, @Body() body : UpdateUserInfoDTO) {
+        return this.usersService.updateUser(id, body);
     }
 
     @Delete(':id')
-    deleteUser(@Param('id') id :string){
-        return this.usersService.deleteUser(parseInt(id))
+    deleteUser(@Param('id', ParseIntPipe) id : number) {
+        return this.usersService.deleteUser(id);
     }
 }

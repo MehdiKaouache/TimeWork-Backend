@@ -39,7 +39,7 @@ export class Availability {
     isAllDay: boolean;
 
     // La propriété startTime sert à stocker l'heure de début de la disponibilité pour le jour de la semaine spécifié.
-    // Elle est de type time et peut être nulle si l'utilisateur n'est pas disponible ce jour-là.
+    // Elle est de type time et peut être nulle si l'utilisateur n'est pas disponible ou disponible toute la journée.
     @Column({
         type: 'text',
         nullable: true 
@@ -47,7 +47,7 @@ export class Availability {
     startTime: string | null;
 
     // La propriété endTime sert à stocker l'heure de fin de la disponibilité pour le jour de la semaine spécifié.
-    // Elle est de type time et peut être nulle si l'utilisateur n'est pas disponible ce jour-là.
+    // Elle est de type time et peut être nulle si l'utilisateur n'est pas disponible ou disponible toute la journée.
     @Column({
         type: 'text',
         nullable: true

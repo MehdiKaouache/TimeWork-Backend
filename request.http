@@ -1,60 +1,116 @@
-### Create user
+### Signup User 1
 POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
 {
-  "firstName": "Anas",
-  "lastName": "Benguade",
-  "email": "anas@test.com",
-  "password": "password123456"
+  "firstName": "Manager",
+  "lastName": "Test",
+  "email": "manager@test.com",
+  "password": "password123"
 }
 
-### Create 2nd User
+### Signup User 2
 POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
 {
-  "firstName": "Test",
-  "lastName": "User",
-  "email": "test2@test.com",
-  "password": "test123456789"
+  "firstName": "Employee",
+  "lastName": "Test",
+  "email": "employee@test.com",
+  "password": "password123"
 }
 
-### Login
+### Login Manager
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
 {
-  "email": "anas@test.com",
-  "password": "password123456"
+  "email": "manager@test.com",
+  "password": "password123"
 }
 
-### Login wrong password
+### Login Employee
 POST http://localhost:3000/auth/signin
 Content-Type: application/json
 
 {
-  "email": "anas@test.com",
-  "password": "wrongpassword"
+  "email": "employee@test.com",
+  "password": "password123"
 }
 
-### Test protected route without token
-GET http://localhost:3000/auth/whoami
+### Tokens Stock
+MANAGER_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJpYXQiOjE3NzQ5NjA3NjgsImV4cCI6MTc3NTA0NzE2OH0.daXK8608jTe-2Ls82nDxk1JBmzt7wZlDimzaSSY6ziI
+EMPLOYEE_TOKEN = 
 
-### Who am I
-GET http://localhost:3000/auth/whoami
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYW5hc0B0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiRU1QNDc1NzYiLCJpYXQiOjE3NzQ4MTc4MzcsImV4cCI6MTc3NDkwNDIzN30.JikIqVR1KnPXq37OR3gIkKB71-8D42JTjTJpSmuZFyQ
+### Approve User 1
+PATCH http://localhost:3000/managers/users/1/approve
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJpYXQiOjE3NzQ5NjA3NjgsImV4cCI6MTc3NTA0NzE2OH0.daXK8608jTe-2Ls82nDxk1JBmzt7wZlDimzaSSY6ziI
 
-### Get all users
-GET http://localhost:3000/users
+### Approve User 2
+PATCH http://localhost:3000/managers/users/2/approve
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJpYXQiOjE3NzQ5NjA3NjgsImV4cCI6MTc3NTA0NzE2OH0.daXK8608jTe-2Ls82nDxk1JBmzt7wZlDimzaSSY6ziI
 
-### Update user
-PATCH http://localhost:3000/users/5
+### Set Manager
+PATCH http://localhost:3000/managers/users/1/role-salary
+Authorization: Bearer MANAGER_TOKEN
 Content-Type: application/json
 
 {
-  "firstName": "Adam"
+  "role": "MANAGER",
+  "hourlyRate": 30
 }
 
-### Delete user
-DELETE http://localhost:3000/users/4
+### Set Employee
+PATCH http://localhost:3000/managers/users/2/role-salary
+Authorization: Bearer MANAGER_TOKEN
+Content-Type: application/json
+
+{
+  "role": "EMPLOYEE",
+  "hourlyRate": 20
+}
+
+### Get All Users with employee role (fails)
+GET http://localhost:3000/managers/users
+Authorization: Bearer EMPLOYEE_TOKEN
+
+### Get All Users with manager role (works)
+GET http://localhost:3000/managers/users
+Authorization: Bearer MANAGER_TOKEN
+
+### Set Availability for Employee
+POST http://localhost:3000/employee/availability/2
+Authorization: Bearer EMPLOYEE_TOKEN
+Content-Type: application/json
+
+{
+  "dayOfWeek": "MONDAY",
+  "isAvailable": true,
+  "startTime": "09:00",
+  "endTime": "17:00"
+}
+
+### Get Availability for Employee
+GET http://localhost:3000/employee/availability/2
+Authorization: Bearer EMPLOYEE_TOKEN
+
+### Get Availability for Employee (Manager Access)
+GET http://localhost:3000/employee/availability/2
+Authorization: Bearer MANAGER_TOKEN
+
+### update Availability for Employee
+PATCH http://localhost:3000/employee/availability/1
+Authorization: Bearer EMPLOYEE_TOKEN
+Content-Type: application/json
+
+{
+  "dayOfWeek": "MONDAY",
+  "isAvailable": true,
+  "startTime": "09:00",
+  "endTime": "17:00"
+}
+
+### Delete Availability for Employee
+DELETE http://localhost:3000/employee/availability/1
+Authorization: Bearer EMPLOYEE_TOKEN
+

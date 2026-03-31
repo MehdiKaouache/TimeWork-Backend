@@ -1,6 +1,6 @@
 import { ExecutionContext, NestInterceptor, CallHandler, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UsersService } from "./users.service";
+import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class CurrentUserInterceptor implements NestInterceptor{
@@ -16,7 +16,7 @@ export class CurrentUserInterceptor implements NestInterceptor{
             return next.handle();
         }
         else{
-            const user = await this.userService.findUser(userId)
+            const user = await this.userService.findOne(userId)
 
             request.currentUser = user
             request.role = user.role

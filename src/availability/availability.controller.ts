@@ -1,34 +1,45 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { AvailabilityService } from './availability.service';
 import { CreateAvailabilityDto } from './dtos/create-availability.dto';
 import { UpdateAvailabilityDto } from './dtos/update-availability.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { UserRole } from 'src/common/enums/user-roles.enum';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('availability')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class AvailabilityController {
   constructor(private readonly availabilityService: AvailabilityService) {}
 
-  @Post()
-  create(@Body() createAvailabilityDto: CreateAvailabilityDto) {
-    return this.availabilityService.create(createAvailabilityDto);
-  }
-
+  
   @Get()
+  @Roles(UserRole.MANAGER)
   findAll() {
-    return this.availabilityService.findAll();
+    return this.availabilityService.getAllAvailabilities();
+  }
+  
+  @Get('users/:userId')
+  findOne(@Param('userId', ParseIntPipe) userId: number) {
+    return this.availabilityService.getUserAvailabilites(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.availabilityService.findOne(+id);
+  @Post('users/:userId')
+  create(@Param('userId', ParseIntPipe) userId: number, 
+    @Body() body: CreateAvailabilityDto) {
+    return this.availabilityService.createAvailability(userId, body);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAvailabilityDto: UpdateAvailabilityDto) {
-    return this.availabilityService.update(+id, updateAvailabilityDto);
+  @Roles(UserRole.EMPLOYEE)
+  update(@Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateAvailabilityDto) {
+    return this.availabilityService.updateAvailability(id, body);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.availabilityService.remove(+id);
+  @Roles(UserRole.EMPLOYEE)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.availabilityService.deleteAvailability(id);
   }
 }

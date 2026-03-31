@@ -12,9 +12,11 @@ export class CreateUserDTO {
     lastName : string
 
     @IsEmail()
+    @IsNotEmpty()
     email : string
 
     @IsString()
+    @IsNotEmpty()
     @MinLength(12)
     password : string
 }
