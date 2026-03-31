@@ -40,6 +40,7 @@ Content-Type: application/json
 
 ### Tokens Stock
 MANAGER_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
+EMPLOYEE_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
 
 ### Approve User 2
 PATCH http://localhost:3000/managers/users/2/approve
@@ -51,25 +52,25 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsI
 Content-Type: application/json
 
 {
-  "role": "EMPLOYEE",
-  "hourlyRate": 20
+  "role": "assistant_manager",
+  "hourlyRate": 25
 }
 
 ### Get All Users with employee role (fails)
 GET http://localhost:3000/managers/users
-Authorization: Bearer EMPLOYEE_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
 
 ### Get All Users with manager role (works)
 GET http://localhost:3000/managers/users
-Authorization: Bearer MANAGER_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
 
 ### Set Availability for Employee
 POST http://localhost:3000/employee/availability/2
-Authorization: Bearer EMPLOYEE_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
 Content-Type: application/json
 
 {
-  "dayOfWeek": "MONDAY",
+  "dayOfWeek": "friday",
   "isAvailable": true,
   "startTime": "09:00",
   "endTime": "17:00"
@@ -77,25 +78,25 @@ Content-Type: application/json
 
 ### Get Availability for Employee
 GET http://localhost:3000/employee/availability/2
-Authorization: Bearer EMPLOYEE_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
 
 ### Get Availability for Employee (Manager Access)
-GET http://localhost:3000/employee/availability/2
-Authorization: Bearer MANAGER_TOKEN
+GET http://localhost:3000/managers/availabilities
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
 
 ### update Availability for Employee
 PATCH http://localhost:3000/employee/availability/1
-Authorization: Bearer EMPLOYEE_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
 Content-Type: application/json
 
 {
-  "dayOfWeek": "MONDAY",
+  "dayOfWeek": "tuesday",
   "isAvailable": true,
-  "startTime": "09:00",
-  "endTime": "17:00"
+  "startTime": "17:00",
+  "endTime": "23:00"
 }
 
 ### Delete Availability for Employee
 DELETE http://localhost:3000/employee/availability/1
-Authorization: Bearer EMPLOYEE_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
 
