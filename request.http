@@ -39,30 +39,15 @@ Content-Type: application/json
 }
 
 ### Tokens Stock
-MANAGER_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJpYXQiOjE3NzQ5NjA3NjgsImV4cCI6MTc3NTA0NzE2OH0.daXK8608jTe-2Ls82nDxk1JBmzt7wZlDimzaSSY6ziI
-EMPLOYEE_TOKEN = 
-
-### Approve User 1
-PATCH http://localhost:3000/managers/users/1/approve
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJpYXQiOjE3NzQ5NjA3NjgsImV4cCI6MTc3NTA0NzE2OH0.daXK8608jTe-2Ls82nDxk1JBmzt7wZlDimzaSSY6ziI
+MANAGER_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
 
 ### Approve User 2
 PATCH http://localhost:3000/managers/users/2/approve
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJpYXQiOjE3NzQ5NjA3NjgsImV4cCI6MTc3NTA0NzE2OH0.daXK8608jTe-2Ls82nDxk1JBmzt7wZlDimzaSSY6ziI
-
-### Set Manager
-PATCH http://localhost:3000/managers/users/1/role-salary
-Authorization: Bearer MANAGER_TOKEN
-Content-Type: application/json
-
-{
-  "role": "MANAGER",
-  "hourlyRate": 30
-}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
 
 ### Set Employee
 PATCH http://localhost:3000/managers/users/2/role-salary
-Authorization: Bearer MANAGER_TOKEN
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
 Content-Type: application/json
 
 {
