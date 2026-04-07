@@ -57,7 +57,7 @@ export class AvailabilityService {
       throw new NotFoundException('Availability for this day already exists');
     }
 
-    if(body.isAllDay == false || body.isAllDay == true) {
+    if(body.isAllDay === true) {
       body.startTime = undefined;
       body.endTime = undefined;
     }

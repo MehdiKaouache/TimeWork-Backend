@@ -99,4 +99,3 @@ Content-Type: application/json
 ### Delete Availability for Employee
 DELETE http://localhost:3000/employee/availability/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
-
