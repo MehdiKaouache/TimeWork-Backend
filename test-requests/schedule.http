@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:3000
+@tokenManager = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
+
+### Create a Schedule
+POST {{baseUrl}}/schedules
+Authorization: Bearer {{tokenManager}}
+Content-Type: application/json
+
+{
+  "weekNumber": 15,
+  "startDate": "2026-04-06"
+}
+
+### Get All Schedules
+GET {{baseUrl}}/schedules
+Authorization: Bearer {{tokenManager}}
+
+### Get Specific Schedule
+GET {{baseUrl}}/schedules/1
+Authorization: Bearer {{tokenManager}}
+
+### Update Schedule 
+PATCH {{baseUrl}}/schedules/1
+Authorization: Bearer {{tokenManager}}
+Content-Type: application/json
+
+{
+  "weekNumber": 16
+}
+
+### Delete Schedule 
+DELETE {{baseUrl}}/schedules/1
+Authorization: Bearer {{tokenManager}}

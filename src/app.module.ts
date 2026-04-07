@@ -9,6 +9,7 @@ import { LeaveRequest } from './leave-request/entities/leave-request.entity';
 import { Availability } from './availability/entities/availability.entity';
 import { AvailabilityModule } from './availability/availability.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(
@@ -18,7 +19,7 @@ import { LeaveRequestModule } from './leave-request/leave-request.module';
       entities: [User, LeaveRequest, Availability],
       synchronize: true,
     }
-  ), UsersModule, AuthModule, AvailabilityModule, LeaveRequestModule ],
+  ), UsersModule, AuthModule, AvailabilityModule, LeaveRequestModule, ScheduleModule ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,0 +1,80 @@
+@baseUrl = http://localhost:3000
+@tokenEmployee = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZW1wbG95ZWVAdGVzdC5jb20iLCJlbXBsb3llZU51bWJlciI6IkVNUDk5MDA2Iiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzc0OTY1Njk0LCJleHAiOjE3NzUwNTIwOTR9.iCE6z78t99GV5Wv6XTkJ7pwusbLyUt5dZzYI051mdfQ
+
+### Set My Availability
+POST {{baseUrl}}/employee/availability/2
+Authorization: Bearer {{tokenEmployee}}
+Content-Type: application/json
+
+{
+  "dayOfWeek": "friday",
+  "isAvailable": true,
+  "startTime": "09:00",
+  "endTime": "17:00"
+}
+
+### Get My Availabilities
+GET {{baseUrl}}/employee/availability/2
+Authorization: Bearer {{tokenEmployee}}
+
+### Update My Availability
+PATCH {{baseUrl}}/employee/availability/1
+Authorization: Bearer {{tokenEmployee}}
+Content-Type: application/json
+
+{
+  "dayOfWeek": "tuesday",
+  "isAvailable": true,
+  "startTime": "17:00",
+  "endTime": "23:00"
+}
+
+### Delete My Availability
+DELETE {{baseUrl}}/employee/availability/1
+Authorization: Bearer {{tokenEmployee}}
+
+### Create Leave Request
+POST {{baseUrl}}/employee/leave-request/2
+Authorization: Bearer {{tokenEmployee}}
+Content-Type: application/json
+
+{
+  "startDate": "2026-05-01",
+  "endDate": "2026-05-07",
+  "reason": "Vacances familiales"
+}
+
+### Get My Leave Requests
+GET {{baseUrl}}/employee/leave-request/2
+Authorization: Bearer {{tokenEmployee}}
+
+### Update My Leave Request
+PATCH {{baseUrl}}/employee/leave-request/1
+Authorization: Bearer {{tokenEmployee}}
+Content-Type: application/json
+
+{
+  "reason": "Changement de date"
+}
+
+### Delete My Leave Request
+DELETE {{baseUrl}}/employee/leave-request/1
+Authorization: Bearer {{tokenEmployee}}
+
+### Find One User (Profile Info)
+GET {{baseUrl}}/users/2
+Authorization: Bearer {{tokenEmployee}}
+
+### Update My User Info
+PATCH {{baseUrl}}/users/2
+Authorization: Bearer {{tokenEmployee}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+### Delete User (Account Deletion)
+DELETE {{baseUrl}}/users/2
+Authorization: Bearer {{tokenEmployee}}
