@@ -10,13 +10,14 @@ import { Availability } from './availability/entities/availability.entity';
 import { AvailabilityModule } from './availability/availability.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { Schedule } from './schedule/entities/schedule.entity';
 
 @Module({
   imports: [TypeOrmModule.forRoot(
     {
       type: "sqlite",
       database: "db.sqlite",
-      entities: [User, LeaveRequest, Availability],
+      entities: [User, LeaveRequest, Availability, Schedule],
       synchronize: true,
     }
   ), UsersModule, AuthModule, AvailabilityModule, LeaveRequestModule, ScheduleModule ],
