@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Session, UseGuards } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { CreateUserDto } from './dtos/create-users.dto';
-import { UpdateUser } from './dtos/update-user.dto';
-import { Serialize } from '../interceptor/serialize.interceptor';
+import { UpdateUserInfoDTO } from './dtos/update-user.dto';
+import { Serialize } from '../interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorator/currentUser.decorator';
@@ -41,7 +41,7 @@ export class UsersController {
     }
 
     @Patch('/update/:id')
-    updateUser(@Param('id') id : string, @Body() body : UpdateUser) {
+    updateUser(@Param('id') id : string, @Body() body : UpdateUserInfoDTO) {
         return this.usersService.updateUser(parseInt(id), body);
     }
 

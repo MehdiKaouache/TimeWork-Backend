@@ -1,7 +1,7 @@
 import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { User } from '../../users/entities/user.entity';
-// import { Schedule } from '../../schedule/entities/schedule.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Schedule } from 'src/schedule/entities/schedule.entity';
 
 @Entity('shifts')
 export class Shift {
@@ -43,14 +43,11 @@ export class Shift {
     })
     user: User;
 
-    // // Relation ManyToOne : plusieurs shifts peuvent appartenir à un seul schedule
-    // @Index()
-    // @ManyToOne(() => Schedule, (schedule) => schedule.shifts, {
-    //     nullable: false,
-    //     onDelete: 'CASCADE',
-    // })
-    // schedule: Schedule;
-
-
-
+    // Relation ManyToOne : plusieurs shifts peuvent appartenir à un seul schedule
+    @Index()
+    @ManyToOne(() => Schedule, (schedule) => schedule.shifts, {
+        nullable: false,
+        onDelete: 'CASCADE'
+    })
+    schedule: Schedule;
 }

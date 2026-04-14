@@ -6,11 +6,9 @@ import { UserRole } from 'src/common/enums/user-roles.enum';
 import { LeaveRequestService } from 'src/leave-request/leave-request.service';
 import { AvailabilityService } from 'src/availability/availability.service';
 import { CreateAvailabilityDto } from 'src/availability/dtos/create-availability.dto';
-import { UserListDto } from '../dtos/user-list.dto';
 import { UpdateAvailabilityDto } from 'src/availability/dtos/update-availability.dto';
 import { CreateLeaveRequestDto } from 'src/leave-request/dtos/create-leave-request.dto';
 import { UpdateLeaveRequestDto } from 'src/leave-request/dtos/update-leave-request.dto';
-import { DayOfWeek } from 'src/common/enums/day-of-week.enum';
 
 @Controller('employee')
 @UseGuards(JwtAuthGuard, RolesGuard)

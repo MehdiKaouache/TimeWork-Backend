@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Index, OneToMany,  PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Shift } from 'src/shift/entities/shift.entity';
 
 @Entity('schedules')
 export class Schedule {
@@ -23,6 +24,10 @@ export class Schedule {
     @Column({ default: false })
     isPublished: boolean;
 
-    /*@OneToMany(() => Shift, (shift) => shift.schedule, { cascade: true })
-    shifts: Shift[];*/
+    @Index()
+    @OneToMany(() => Shift, (shift) => shift.schedule, {
+        nullable: true,
+        onDelete: 'CASCADE' 
+    })
+    shifts: Shift[];
 }

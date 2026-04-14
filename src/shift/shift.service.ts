@@ -9,6 +9,7 @@ import { Availability } from 'src/availability/entities/availability.entity';
 import { DayOfWeek } from 'src/common/enums/day-of-week.enum';
 import { LeaveRequest } from 'src/leave-request/entities/leave-request.entity';
 import { LeaveStatus } from 'src/common/enums/leave-status.enum';
+import { Schedule } from 'src/schedule/entities/schedule.entity';
 
 @Injectable()
 export class ShiftService {
@@ -19,8 +20,8 @@ export class ShiftService {
         @InjectRepository(User)
         private userRepository: Repository<User>,
 
-        // @InjectRepository(Schedule)
-        // private scheduleRepository: Repository<Schedule>,
+        @InjectRepository(Schedule)
+        private scheduleRepository: Repository<Schedule>,
         
         @InjectRepository(Availability)
         private availabilityRepository: Repository<Availability>,
@@ -73,11 +74,6 @@ export class ShiftService {
         if (!user) {
             throw new NotFoundException('User not found');
         }
-
-        // const schedule = await this.scheduleRepository.findOne({ where: { id: body.scheduleId } });
-        // if (!schedule) {
-            //     throw new NotFoundException('Schedule not found');
-        // }
 
         const date = new Date(body.date);
 
