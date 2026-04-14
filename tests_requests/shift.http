@@ -1,0 +1,33 @@
+### Get all shifts
+GET http://localhost:3000/shift
+Authorization: Bearer MANAGER_TOKEN
+
+### Get user shifts
+GET http://localhost:3000/shift/users/2
+Authorization: Bearer EMPLOYEE_TOKEN
+
+### Create shift
+POST http://localhost:3000/shift/users/2
+Authorization: Bearer MANAGER_TOKEN
+Content-Type: application/json
+
+{
+  "date": "2026-04-15",
+  "startTime": "09:00",
+  "endTime": "17:00"
+}
+
+### Update shift
+PATCH http://localhost:3000/shift/1
+Authorization: Bearer MANAGER_TOKEN
+Content-Type: application/json
+
+{
+  "date": "2026-04-16",
+  "startTime": "10:00",
+  "endTime": "18:00"
+}
+
+### Delete shift
+DELETE http://localhost:3000/shift/1
+Authorization: Bearer MANAGER_TOKEN

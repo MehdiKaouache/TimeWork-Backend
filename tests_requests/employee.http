@@ -4,7 +4,7 @@ Authorization: Bearer EMPLOYEE_TOKEN
 Content-Type: application/json
 
 {
-  "dayOfWeek": "MONDAY",
+  "dayOfWeek": "monday",
   "isAvailable": true,
   "startTime": "09:00",
   "endTime": "17:00"
@@ -20,7 +20,7 @@ Authorization: Bearer EMPLOYEE_TOKEN
 Content-Type: application/json
 
 {
-  "dayOfWeek": "MONDAY",
+  "dayOfWeek": "monday",
   "isAvailable": false
 }
 

@@ -4,10 +4,12 @@ import { ShiftController } from './shift.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Shift } from './entities/shift.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Availability } from 'src/availability/entities/availability.entity';
+import { LeaveRequest } from 'src/leave-request/entities/leave-request.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Shift, User])
+    TypeOrmModule.forFeature([Shift, User, Availability, LeaveRequest, /*Schedual*/ ])
   ],
   providers: [ShiftService],
   controllers: [ShiftController]
