@@ -1,5 +1,6 @@
 import { UserRole } from "src/common/enums/user-roles.enum";
 import { UserStatus } from "src/common/enums/user-status.enum";
+import { Shift } from "../../shift/entities/shift.entity";
 import { LeaveRequest } from "../../leave-request/entities/leave-request.entity";
 import { Availability } from "../../availability/entities/availability.entity";
 import { Exclude } from "class-transformer";
@@ -151,11 +152,20 @@ export class User {
         this.email = this.email.toLowerCase();
     }
 
+    // Il y a une relation OneToMany entre User et Shift, 
+    // car un utilisateur peut avoir plusieurs shifts, 
+    // mais un shift appartient à un seul utilisateur.
+    @OneToMany(() => Shift, (shift) => shift.user, {
+        cascade: true,
+    })
+    shifts: Shift[];
+
     // Il y a une relation OneToMany entre User et Availability, 
     // car un utilisateur peut avoir plusieurs disponibilités, 
     // mais une disponibilité appartient à un seul utilisateur.
     @OneToMany(() => Availability, (availability) => availability.user, {
         cascade: true,
+        nullable: false
     })
     availabilities: Availability[];
     

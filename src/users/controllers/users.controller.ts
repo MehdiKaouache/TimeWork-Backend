@@ -1,6 +1,4 @@
 import { Body, Controller, Get, Param, Patch, Post, Session, UseGuards, UseInterceptors, Delete, ParseIntPipe } from '@nestjs/common';
-import { UserResponseDto } from 'src/users/dtos/user-response.dto';
-import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UpdateUserInfoDTO }  from 'src/users/dtos/update-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';

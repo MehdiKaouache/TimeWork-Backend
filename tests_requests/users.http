@@ -1,0 +1,16 @@
+### Get user
+GET http://localhost:3000/users/1
+Authorization: Bearer MANAGER_TOKEN
+
+### Update user
+PATCH http://localhost:3000/users/1
+Authorization: Bearer MANAGER_TOKEN
+Content-Type: application/json
+
+{
+  "firstName": "Updated"
+}
+
+### Delete user
+DELETE http://localhost:3000/users/2
+Authorization: Bearer MANAGER_TOKEN

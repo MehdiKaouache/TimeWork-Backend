@@ -1,11 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAvailabilityDto } from './dtos/create-availability.dto';
 import { UpdateAvailabilityDto } from './dtos/update-availability.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Availability } from './entities/availability.entity';
 import { User } from 'src/users/entities/user.entity';
-import { DayOfWeek } from 'src/common/enums/day-of-week.enum';
 
 @Injectable()
 export class AvailabilityService {
@@ -21,7 +20,7 @@ export class AvailabilityService {
   async getAllAvailabilities() {
     const availabilities = await this.availabilityRepository.find({ relations: ['user'] });
 
-    if (!availabilities) {
+    if (availabilities.length === 0) {
       throw new NotFoundException('No availabilities found');
     }
 
@@ -32,7 +31,7 @@ export class AvailabilityService {
     const availabilities = await this.availabilityRepository.find({
        where: { user: { id: userId } }, relations: ['user'] });
 
-    if (!availabilities) {
+    if (availabilities.length === 0) {
       throw new NotFoundException('No availabilities found for the specified user');
     }
 
@@ -81,16 +80,28 @@ export class AvailabilityService {
       throw new NotFoundException('Availability not found');
     }
 
-    if(body.isAllDay == false || body.isAllDay == true) {
+    if(body.isAllDay === true) {
+      body.isAllDay = true;
       body.startTime = undefined;
       body.endTime = undefined;
     }
 
-    if(body.startTime && body.endTime && body.startTime >= body.endTime) {
-      throw new NotFoundException('Invalid time range: startTime must be before endTime');
+    if(body.isAllDay === false) {
+      body.isAllDay = false;
     }
 
-    Object.assign(availability, body);
+    const startTime = body.startTime ?? availability.startTime;
+    const endTime = body.endTime ?? availability.endTime;
+
+    if(startTime && endTime && startTime >= endTime) {
+      throw new BadRequestException('Invalid time range: startTime must be before endTime');
+    }
+
+    if(body.startTime) availability.startTime = body.startTime;
+    if(body.endTime) availability.endTime = body.endTime;
+
+    if(body.isAvailable !== undefined) availability.isAvailable = body.isAvailable;
+    if(body.isAllDay !== undefined) availability.isAllDay = body.isAllDay;
 
     return this.availabilityRepository.save(availability);
   }

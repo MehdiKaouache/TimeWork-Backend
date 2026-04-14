@@ -1,0 +1,19 @@
+### Get all (Manager only)
+GET http://localhost:3000/availability
+Authorization: Bearer MANAGER_TOKEN
+
+### Get user availability (Manager only)
+GET http://localhost:3000/availability/users/2
+Authorization: Bearer MANAGER_TOKEN
+
+### Create availability
+POST http://localhost:3000/availability/users/2
+Authorization: Bearer EMPLOYEE_TOKEN
+Content-Type: application/json
+
+{
+  "dayOfWeek": "TUESDAY",
+  "isAvailable": true,
+  "startTime": "10:00",
+  "endTime": "18:00"
+}

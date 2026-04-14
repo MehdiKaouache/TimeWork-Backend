@@ -33,6 +33,7 @@
     "cookie-session": "^2.1.1",
     "cors": "^2.8.6",
     "nestjs": "^0.0.1",
+    "node": "^25.9.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",

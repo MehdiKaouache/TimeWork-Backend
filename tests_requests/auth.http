@@ -1,0 +1,43 @@
+### Signup Manager
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "firstName": "Manager",
+  "lastName": "Test",
+  "email": "manager@test.com",
+  "password": "password123"
+}
+
+### Signup Employee
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "firstName": "Employee",
+  "lastName": "Test",
+  "email": "employee@test.com",
+  "password": "password123"
+}
+
+### Login Manager
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "manager@test.com",
+  "password": "password123"
+}
+
+### Login Employee
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+  "email": "employee@test.com",
+  "password": "password123"
+}
+
+### WhoAmI
+GET http://localhost:3000/auth/whoami
+Authorization: Bearer MANAGER_TOKEN

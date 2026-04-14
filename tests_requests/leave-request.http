@@ -1,0 +1,26 @@
+### Get all leave requests
+GET http://localhost:3000/leave-request
+Authorization: Bearer MANAGER_TOKEN
+
+### Get user leave requests
+GET http://localhost:3000/leave-request/user/2
+Authorization: Bearer EMPLOYEE_TOKEN
+
+### Create leave request
+POST http://localhost:3000/leave-request/user/2
+Authorization: Bearer EMPLOYEE_TOKEN
+Content-Type: application/json
+
+{
+  "startDate": "2026-05-01",
+  "endDate": "2026-05-03",
+  "reason": "Personal"
+}
+
+### Approve leave
+PATCH http://localhost:3000/leave-request/1/approve
+Authorization: Bearer MANAGER_TOKEN
+
+### Reject leave
+PATCH http://localhost:3000/leave-request/1/reject
+Authorization: Bearer MANAGER_TOKEN

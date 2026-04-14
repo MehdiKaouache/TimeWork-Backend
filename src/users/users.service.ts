@@ -2,8 +2,8 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserStatus } from 'src/common/enums/user-status.enum';
-import { UserRole } from 'src/common/enums/user-roles.enum';
+import { UserStatus } from '../common/enums/user-status.enum';
+import { UserRole } from '../common/enums/user-roles.enum';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 

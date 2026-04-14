@@ -1,0 +1,44 @@
+### Create Availability
+POST http://localhost:3000/employee/availability/2
+Authorization: Bearer EMPLOYEE_TOKEN
+Content-Type: application/json
+
+{
+  "dayOfWeek": "MONDAY",
+  "isAvailable": true,
+  "startTime": "09:00",
+  "endTime": "17:00"
+}
+
+### Get My Availability
+GET http://localhost:3000/employee/availability/2
+Authorization: Bearer EMPLOYEE_TOKEN
+
+### Update Availability
+PATCH http://localhost:3000/employee/availability/1
+Authorization: Bearer EMPLOYEE_TOKEN
+Content-Type: application/json
+
+{
+  "dayOfWeek": "MONDAY",
+  "isAvailable": false
+}
+
+### Delete Availability
+DELETE http://localhost:3000/employee/availability/1
+Authorization: Bearer EMPLOYEE_TOKEN
+
+### Create Leave Request
+POST http://localhost:3000/employee/leave-request/2
+Authorization: Bearer EMPLOYEE_TOKEN
+Content-Type: application/json
+
+{
+  "startDate": "2026-04-20",
+  "endDate": "2026-04-22",
+  "reason": "Vacation"
+}
+
+### Get My Leave Requests
+GET http://localhost:3000/employee/leave-request/2
+Authorization: Bearer EMPLOYEE_TOKEN
