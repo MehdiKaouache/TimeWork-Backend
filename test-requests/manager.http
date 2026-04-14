@@ -1,0 +1,48 @@
+@baseUrl = http://localhost:3000
+@tokenManager = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsImVtcGxveWVlTnVtYmVyIjoiTUFOMTU4MzUiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc3NDk2NDc2MiwiZXhwIjoxNzc1MDUxMTYyfQ.rOWPjqLbRMBkflnMRg4DZiG3hlKzz3d-u4KDwvjKWJ4
+
+### Get All Users
+GET {{baseUrl}}/managers/users
+Authorization: Bearer {{tokenManager}}
+
+### Approve User
+PATCH {{baseUrl}}/managers/users/2/approve
+Authorization: Bearer {{tokenManager}}
+
+### Reject User
+PATCH {{baseUrl}}/managers/users/2/reject
+Authorization: Bearer {{tokenManager}}
+
+### Set Employee Role and Salary
+PATCH {{baseUrl}}/managers/users/2/role-salary
+Authorization: Bearer {{tokenManager}}
+Content-Type: application/json
+
+{
+  "role": "assistant_manager",
+  "hourlyRate": 25
+}
+
+### Get All Leave Requests
+GET {{baseUrl}}/managers/leave-requests
+Authorization: Bearer {{tokenManager}}
+
+### Get User Leave Requests 
+GET {{baseUrl}}/managers/leave-requests/2
+Authorization: Bearer {{tokenManager}}
+
+### Approve Leave Request
+PATCH {{baseUrl}}/managers/leave-requests/1/approve
+Authorization: Bearer {{tokenManager}}
+
+### Reject Leave Request
+PATCH {{baseUrl}}/managers/leave-requests/1/reject
+Authorization: Bearer {{tokenManager}}
+
+### Get All Availabilities 
+GET {{baseUrl}}/managers/availabilities
+Authorization: Bearer {{tokenManager}}
+
+### Get User Availabilities
+GET {{baseUrl}}/managers/availabilities/2
+Authorization: Bearer {{tokenManager}}

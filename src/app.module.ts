@@ -11,16 +11,18 @@ import { AvailabilityModule } from './availability/availability.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
 import { ShiftModule } from './shift/shift.module';
 import { Shift } from './shift/entities/shift.entity';
+import { ScheduleModule } from './schedule/schedule.module';
+import { Schedule } from './schedule/entities/schedule.entity';
 
 @Module({
   imports: [TypeOrmModule.forRoot(
     {
       type: "sqlite",
       database: "db.sqlite",
-      entities: [User, LeaveRequest, Availability, Shift],
+      entities: [User, LeaveRequest, Availability, Shift, Schedule],
       synchronize: true,
     }
-  ), UsersModule, AuthModule, AvailabilityModule, LeaveRequestModule, ShiftModule ],
+  ), UsersModule, AuthModule, AvailabilityModule, LeaveRequestModule, ShiftModule, ScheduleModule ],
   controllers: [AppController],
   providers: [AppService],
 })
