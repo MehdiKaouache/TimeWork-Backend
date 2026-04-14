@@ -24,10 +24,7 @@ export class Schedule {
     @Column({ default: false })
     isPublished: boolean;
 
-    @Index()
     @OneToMany(() => Shift, (shift) => shift.schedule, {
-        nullable: true,
-        onDelete: 'CASCADE' 
     })
     shifts: Shift[];
 }

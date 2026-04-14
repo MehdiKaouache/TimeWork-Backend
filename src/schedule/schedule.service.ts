@@ -4,15 +4,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateScheduleDto } from './dtos/create-schedule.dto';
 import { UpdateScheduleDto } from './dtos/update-schedule.dto';
+import { Shift } from 'src/shift/entities/shift.entity';
 
 @Injectable()
 export class ScheduleService {
     constructor(
         @InjectRepository(Schedule)
-        private readonly scheduleRepo: Repository<Schedule>
+        private readonly scheduleRepo: Repository<Schedule>,
+
+        @InjectRepository(Shift)
+        private readonly shiftRepo: Repository<Shift>
     ){}
 
     async createSchedule(dto: CreateScheduleDto){
+        const shiftExists = await this.shiftRepo.count();
+        
+        if (shiftExists === 0) {
+            throw new BadRequestException('Cannot create schedule: No shifts available');
+        }
+
         const existing = await this.scheduleRepo.findOneBy({weekNumber: dto.weekNumber});
 
         if(existing){
