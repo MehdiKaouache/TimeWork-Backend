@@ -24,6 +24,13 @@ export class ManagersController {
         return this.userService.findAll();
     }
 
+    @Get("users/pending")
+    async getAllUsersPendingApprouval(){
+        const users = await this.userService.findAll()
+
+        return users.filter(user => user.status === "pending");
+    }
+
     @Patch('users/:id/approve')
     approveUser(@Param('id', ParseIntPipe) id: number) {
         return this.userService.approveUser(id);
