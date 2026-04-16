@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 import { 
   Body, 
@@ -9,10 +9,11 @@ import {
   UseGuards, 
   Request
 } from '@nestjs/common';
+
 import { SignupDTO } from './dtos/signup.dto';
 import { SigninDTO } from './dtos/signin.dto';
-import { RefreshTokenDTO } from './dtos/refresh-token.dto';
 import { UpdateLoginDTO } from './dtos/update-login.dto';
+import type { Request as ExpressRequest } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -34,12 +35,7 @@ export class AuthController {
         return this.authService.signin(body.email, body.password);
     }
 
-    @Post('/refresh')
-    refreshToken(@Body() body: RefreshTokenDTO) {
-        return this.authService.refreshToken(body.refreshToken);
-    }
-
-     // pour le logout on va juste supprimer 
+    // pour le logout on va juste supprimer 
     // le token du localstorage dans le frontend
     // localStorage.removeItem("token")
 
@@ -50,14 +46,14 @@ export class AuthController {
         };
     }
 
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(JwtAuthGuard)
     @Post('/update-login')
     updateLogin(
-        @Request() req: any,
+        @Request() req: ExpressRequest,
         @Body() body: UpdateLoginDTO
     ) {
         return this.authService.updateLogin(
-            req.user.userId,
+            (req as any).user.userId,
             body
         );
     }
@@ -73,11 +69,11 @@ export class AuthController {
     //     }
     // })
 
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(JwtAuthGuard)
     @Get('/whoami')
-    async whoAmI(@Request() req: any) {
-        const user = await this.authService.whoAmI(req.user.userId);
-        return user;
+    async whoAmI(@Request() req: ExpressRequest) {
+        return this.authService.whoAmI(
+          (req as any).user.userId,
+        );
     }
-
 }

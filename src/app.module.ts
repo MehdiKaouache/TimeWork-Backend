@@ -13,19 +13,32 @@ import { ShiftModule } from './shift/shift.module';
 import { Shift } from './shift/entities/shift.entity';
 import { ScheduleModule } from './schedule/schedule.module';
 import { Schedule } from './schedule/entities/schedule.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(
+  imports: [
+    ConfigModule.forRoot(
+    {
+      isGlobal: true
+    }
+  ),
+
+   TypeOrmModule.forRoot(
     {
       type: "sqlite",
       database: "db.sqlite",
       entities: [User, LeaveRequest, Availability, Shift, Schedule],
       synchronize: true,
     }
-  ), UsersModule, AuthModule, AvailabilityModule, LeaveRequestModule, ShiftModule, ScheduleModule ],
+  ),
+    UsersModule,
+    AuthModule,
+    AvailabilityModule,
+    LeaveRequestModule,
+    ShiftModule,
+    ScheduleModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  
-}
+export class AppModule {}

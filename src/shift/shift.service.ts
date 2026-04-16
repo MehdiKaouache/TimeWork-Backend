@@ -46,7 +46,7 @@ export class ShiftService {
     }
 
     async getAllShifts() {
-        const shifts = await this.shiftRepository.find({ relations: ['user', /*'schedule'*/]});
+        const shifts = await this.shiftRepository.find({ relations: ['user', 'schedule']});
 
 
         if (shifts.length === 0) {
@@ -58,7 +58,7 @@ export class ShiftService {
 
     async getUserShifts(userId: number) {
         const shifts = await this.shiftRepository.find({
-            where: { user: { id: userId } }, relations: ['user', /*'schedule'*/] });
+            where: { user: { id: userId } }, relations: ['user', 'schedule'] });
 
         if (shifts.length === 0) {
             throw new NotFoundException('No shifts found for the specified user');
@@ -156,7 +156,7 @@ export class ShiftService {
     async updateShift(id: number, body: UpdateShiftDto) {
 
         const shift = await this.shiftRepository.findOne({
-            where: { id }, relations: ['user', /*'schedule'*/] });
+            where: { id }, relations: ['user', 'schedule'] });
 
         if (!shift) {
             throw new NotFoundException('Shift not found');
