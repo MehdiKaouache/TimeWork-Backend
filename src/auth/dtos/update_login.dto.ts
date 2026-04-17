@@ -8,14 +8,14 @@ export class UpdateLoginDTO {
   currentPassword: string;
 
   @IsOptional()
-  @Transform(({ value }) => value.trim().toLowerCase())
-  @IsEmail()
+  @Transform(({ value }) => typeof value === 'string' ? value.trim().toLowerCase() : value)
+  @IsEmail({}, { message: 'Please provide a valid new email address' })
+  @MaxLength(255)
   newEmail?: string;
 
   @IsOptional()
-  @Transform(({ value }) => value.trim())
   @IsString()
-  @MinLength(6)
+  @MinLength(8, { message: 'New password must be at least 8 characters long' })
   @MaxLength(50)
   newPassword?: string;
 }

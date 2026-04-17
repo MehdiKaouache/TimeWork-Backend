@@ -14,63 +14,54 @@ export class UsersService {
 
     constructor(
         @InjectRepository(User)
-        private usersRepository: Repository<User>,
+        private readonly usersRepository: Repository<User>,
     ) {}
     
     /**
-     * Récupère tous les utilisateurs de la base de données.
-     * @returns Un tableau d'objets User représentant tous les utilisateurs.
-     * @throws NotFoundException si aucun utilisateur n'est trouvé.
+     * Retrieves all users from the database.
+     * @returns An array of User entities.
+     * @throws NotFoundException if no users exist.
      */
-
-    async findAll() {
+    async findAll(): Promise<User[]> {
 
         const users = await this.usersRepository.find();
         
         if (!users || users.length === 0) {
-            throw new NotFoundException("No users found");
+            throw new NotFoundException('No users found');
         }
 
         return users;
     }
 
     /**
-     * Récupère un utilisateur spécifique en fonction de son identifiant.
-     * @param id - L'identifiant de l'utilisateur à récupérer.
-     * @return Un objet User représentant l'utilisateur trouvé.
-     * @throws NotFoundException si aucun utilisateur n'est trouvé avec l'identifiant fourni.
+     * Retrieves a specific user by their unique ID.
+     * @param id - The ID of the user to retrieve.
+     * @returns The found User entity.
+     * @throws NotFoundException if the user is not found.
      */
-
-    async findOne(id : number) {
+    async findOne(id : number): Promise<User> {
 
         const user = await this.usersRepository.findOne({ where: { id } });
         
         if (!user) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(`User with ID ${id} not found`);
         }
 
         return user;
     }
 
     /**
-     * Met à jour les informations d'un utilisateur existant.
-     * @param id - L'identifiant de l'utilisateur à mettre à jour.
-     * @param body - Un objet contenant les nouvelles valeurs pour les propriétés de l'utilisateur (firstName et/ou lastName).
-     * @returns Un message de succès indiquant que l'utilisateur a été mis à jour avec succès.
-     * @throws NotFoundException si aucun utilisateur n'est trouvé avec l'identifiant fourni.
+     * Updates general profile information for a user.
+     * @param id - The ID of the user to update.
+     * @param body - Object containing optional firstName and lastName.
+     * @returns A success message.
      */
-
     async updateUser(id: number, body: { firstName?: string; lastName?: string }) {
 
         const user = await this.findOne(id);
 
-        if (body.firstName) {
-            user.firstName = body.firstName;
-        }
-
-        if (body.lastName) {
-            user.lastName = body.lastName;
-        }
+        if (body.firstName) { user.firstName = body.firstName; }
+        if (body.lastName) { user.lastName = body.lastName; }
 
         await this.usersRepository.save(user);
 
@@ -78,19 +69,13 @@ export class UsersService {
     }
     
     /**
-     * Supprime un utilisateur de la base de données en fonction de son identifiant.
-     * @param id - L'identifiant de l'utilisateur à supprimer.
-     * @return Un message de succès indiquant que l'utilisateur a été supprimé avec succès.
-     * @throws NotFoundException si aucun utilisateur n'est trouvé avec l'identifiant fourni.
+     * Permanently removes a user from the database.
+     * @param id - The ID of the user to delete.
+     * @returns A success message.
      */
-
     async deleteUser(id: number) {
 
         const user = await this.findOne(id);
-
-        if (!user) {
-            throw new NotFoundException("User not found");
-        }
 
         await this.usersRepository.remove(user);
 
@@ -99,21 +84,10 @@ export class UsersService {
 
     
     /**
-     * Crée un nouvel utilisateur dans la base de données avec les informations fournies.
-     * @param firstName - Le prénom de l'utilisateur à créer.  
-     * @param lastName - Le nom de famille de l'utilisateur à créer.
-     * @param email - L'adresse e-mail de l'utilisateur à créer.
-     * @param password - Le mot de passe de l'utilisateur à créer.
-     * @returns Un objet User représentant l'utilisateur créé.
+     * Creates a new user entity.
+     * Note: Password hashing and uniqueness checks are coordinated by the AuthService.
     */
-   
     async createUser(firstName: string, lastName: string, email: string, password: string) {
-
-        const existingUser = await this.findUserByEmail(email);
-
-        if (existingUser) {
-            throw new BadRequestException("Email already in use");
-        }
 
         const user = this.usersRepository.create({
                 firstName, 
@@ -122,59 +96,45 @@ export class UsersService {
                 password
             });
 
-        await this.usersRepository.save(user);
+        return await this.usersRepository.save(user);
+    }
 
-        return user;
+    /**
+     * Updates a user's sensitive login credentials.
+     * @param id - User ID.
+     * @param email - New normalized email address.
+     * @param password - New hashed password.
+     */
+    async updateUserCredentials(id: number, email: string, password: string) {
+        const user = await this.findOne(id);
+        
+        user.email = email;
+        user.password = password;
+
+        await this.usersRepository.save(user);
     }
     
     /**
-     * Met à jour les informations de connexion d'un utilisateur existant, telles que l'adresse e-mail et le mot de passe.
-     * @param id - L'identifiant de l'utilisateur à mettre à jour.
-     * @param email - La nouvelle adresse e-mail de l'utilisateur.
-     * @param password - Le nouveau mot de passe de l'utilisateur.
-     * @returns Un objet User représentant l'utilisateur mis à jour.
+     * Updates the hashed refresh token stored in the database.
+     * @param id - User ID.
+     * @param refreshToken - The hashed token or null to invalidate.
      */
-
-    async updateUserCredentials(id: number, email: string,  newPassword: string) {
-        
-        const user = await this.findOne(id);
-
-        const existing = await this.findUserByEmail(email);
-
-        if (existing && existing.id !== id) {
-            throw new BadRequestException("Email already in use");
-        }
-
-        user.email = email;
-        user.password = newPassword;
-
-        await this.usersRepository.save(user);
-
-        return { message: `User ${user.firstName} ${user.lastName} credentials updated successfully` };
+    async updateRefreshToken(id: number, refreshToken: string | null): Promise<void> {
+        await this.usersRepository.update(id, { refreshToken });
+    }
+    
+    /**
+     * Finds a user by their email address.
+     * Used primarily for authentication and registration checks.
+     */
+    async findUserByEmail(email: string): Promise<User | null> {
+        return await this.usersRepository.findOne({ where: { email } });
     }
 
     /**
-    * Récupère un utilisateur en fonction de son adresse e-mail.
-    * @param email - L'adresse e-mail de l'utilisateur à récupérer.
-    * @return Un objet User représentant l'utilisateur trouvé.
-    * @throws NotFoundException si aucun utilisateur n'est trouvé avec l'adresse e-mail fournie.
-    */
-
-    async findUserByEmail(email: string) {
-
-        const user = await this.usersRepository.findOne({ where: { email } });
-
-        return user;
-    }
-
-    /**
-     * Approuve un utilisateur en mettant à jour son statut dans la base de données.
-     * @param id - L'identifiant de l'utilisateur à approuver.
-     * @return Un message de succès indiquant que l'utilisateur a été approuvé avec succès.
-     * @throws NotFoundException si aucun utilisateur n'est trouvé avec l'identifiant fourni.
-     * @throws BadRequestException si l'utilisateur est déjà approuvé.
+     * Approves a pending user account.
+     * @param id - User ID.
      */
-
     async approveUser(id: number) {
 
         const user = await this.findOne(id);
@@ -184,20 +144,17 @@ export class UsersService {
         }
 
         user.status = UserStatus.APPROVED;
+        user.isActive = true;
 
         await this.usersRepository.save(user);
 
-        return { message: `User ${user.firstName} ${user.lastName} approved successfully` };
+        return { message: `User ${user.firstName} ${user.lastName} approved and activated successfully` };
     }
 
     /**
-     * Rejette un utilisateur en mettant à jour son statut dans la base de données.
-     * @param id - L'identifiant de l'utilisateur à rejeter.
-     * @return Un message de succès indiquant que l'utilisateur a été rejeté avec succès.
-     * @throws NotFoundException si aucun utilisateur n'est trouvé avec l'identifiant fourni.
-     * @throws BadRequestException si l'utilisateur est déjà rejeté.
+     * Rejects a pending user account.
+     * @param id - User ID.
      */
-
     async rejectUser(id: number) {
 
         const user = await this.findOne(id);
@@ -207,12 +164,18 @@ export class UsersService {
         }
 
         user.status = UserStatus.REJECTED;
+        user.isActive = false;
 
         await this.usersRepository.save(user);
 
         return { message: `User ${user.firstName} ${user.lastName} rejected successfully` };
     }
 
+    /**
+     * Sets administrative properties for a user.
+     * @param id - User ID.
+     * @param body - The role and hourly rate to assign.
+     */
     async setUserRoleAndHourlyRate(id: number, body: { role: UserRole, hourlyRate: number }) {
 
         const user = await this.findOne(id);
@@ -225,33 +188,71 @@ export class UsersService {
         return { message: `User ${user.firstName} ${user.lastName} role and hourly rate updated successfully` };
     }
     
+    /**
+     * 
+     * @param userId 
+     * @param hashedToken 
+     * @param expiresAt 
+     */
+    async savePasswordResetToken(userId: number, hashedToken: string | null, expiresAt: Date | null): Promise<void> {
+        const user = await this.usersRepository.findOneBy({ id: userId });
+        
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        user.passwordResetToken = hashedToken;
+        user.passwordResetExpiresAt = expiresAt;
+
+        await this.usersRepository.save(user);
+    }
+
+    /**
+     * 
+     * @param userId 
+     * @param hashedPassword 
+     * @returns 
+     */
+    async updatePassword(userId: number, hashedPassword: string): Promise<void> {
+        const user = await this.usersRepository.findOneBy({ id: userId });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        user.password = hashedPassword;
+        
+        // Safety measure: clear tokens when password is changed
+        user.passwordResetToken = null;
+        user.passwordResetExpiresAt = null;
+
+        await this.usersRepository.save(user);
+    }
+    
+    /**
+     * Seeds an initial manager account for testing/first-run purposes.
+     */
     async createInitialManager() {
-        const existing = await this.usersRepository.findOne({
-            where: { email: 'manager@test.com' },
-        });
+        const email = 'manager@test.com';
+        const existing = await this.findUserByEmail(email);
 
         if (existing) return;
 
         const password = 'password123';
-
         const salt = randomBytes(8).toString("hex");
-
         const hash = (await scrypt(password, salt, 32)) as Buffer;
-
         const hashedPassword = `${salt}:${hash.toString('hex')}`;
 
-        const manager = await this.usersRepository.create({
+        const manager = this.usersRepository.create({
             firstName: 'Manager',
             lastName: 'Test',
-            email: 'manager@test.com',
+            email,
             password: hashedPassword,
             role: UserRole.MANAGER,
             isActive: true,
             status: UserStatus.APPROVED,
         });
 
-        await this.usersRepository.save(manager);
-
-        return manager;
+        return await this.usersRepository.save(manager);
     }
 }
