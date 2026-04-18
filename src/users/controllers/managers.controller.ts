@@ -6,7 +6,7 @@ import { SetUserRoleSalaryDTO } from '../dtos/set-user-role-salary.dto';
 import { UserRole } from 'src/common/enums/user-roles.enum';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('managers')
 @UseGuards(JwtAuthGuard, RolesGuard)

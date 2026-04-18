@@ -1,6 +1,14 @@
+### Configuration Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+# ==========================================
+# 1. SIGNUP
+# ==========================================
+
 ### Signup Manager
-POST http://localhost:3000/auth/signup
-Content-Type: application/json
+POST {{baseUrl}}/auth/signup
+Content-Type: {{contentType}}
 
 {
   "firstName": "Manager",
@@ -10,8 +18,8 @@ Content-Type: application/json
 }
 
 ### Signup Employee
-POST http://localhost:3000/auth/signup
-Content-Type: application/json
+POST {{baseUrl}}/auth/signup
+Content-Type: {{contentType}}
 
 {
   "firstName": "Employee",
@@ -20,9 +28,15 @@ Content-Type: application/json
   "password": "password123"
 }
 
+
+# ==========================================
+# 2. SIGNIN (Captures Tokens Dynamically)
+# ==========================================
+
 ### Login Manager
-POST http://localhost:3000/auth/signin
-Content-Type: application/json
+# @name loginManager
+POST {{baseUrl}}/auth/signin
+Content-Type: {{contentType}}
 
 {
   "email": "manager@test.com",
@@ -30,14 +44,127 @@ Content-Type: application/json
 }
 
 ### Login Employee
-POST http://localhost:3000/auth/signin
-Content-Type: application/json
+# @name loginEmployee
+POST {{baseUrl}}/auth/signin
+Content-Type: {{contentType}}
 
 {
   "email": "employee@test.com",
   "password": "password123"
 }
 
-### WhoAmI
-GET http://localhost:3000/auth/whoami
-Authorization: Bearer MANAGER_TOKEN
+
+# ==========================================
+# 3. SECURED ROUTES (Uses Variables)
+# ==========================================
+
+### WhoAmI (Manager)
+GET {{baseUrl}}/auth/whoami
+Authorization: Bearer {{loginManager.response.body.accessToken}}
+
+### WhoAmI (Employee)
+GET {{baseUrl}}/auth/whoami
+Authorization: Bearer {{loginEmployee.response.body.accessToken}}
+
+
+# ==========================================
+# 4. TOKEN REFRESH
+# ==========================================
+
+### Refresh Access Token (Manager)
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "userId": {{loginManager.response.body.userId}},
+  "refreshToken": "{{loginManager.response.body.refreshToken}}"
+}
+
+### Refresh Access Token (Employee)
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "userId": {{loginEmployee.response.body.userId}},
+  "refreshToken": "{{loginEmployee.response.body.refreshToken}}"
+}
+
+
+# ==========================================
+# 5. CREDENTIAL UPDATES
+# ==========================================
+
+### Update Login (Manager)
+POST {{baseUrl}}/auth/update-login
+Authorization: Bearer {{loginManager.response.body.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "currentPassword": "password123",
+  "newEmail": "manager@test.com"
+}
+
+### Update Login (Employee)
+POST {{baseUrl}}/auth/update-login
+Authorization: Bearer {{loginEmployee.response.body.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "currentPassword": "password123",
+  "newEmail": "employee.new@test.com",
+  "newPassword": "newpassword456"
+}
+
+# ==========================================
+# 6. LOGOUT
+# ==========================================
+
+### Logout (Manager)
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{loginManager.response.body.accessToken}}
+
+### Logout (Employee)
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{loginEmployee.response.body.accessToken}}
+
+# ==========================================
+# 7. PASSWORD RESET FLOW
+# ==========================================
+
+### Forgot Password (Manager)
+# @name forgotPasswordManager
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "manager@test.com"
+}
+
+### Reset Password (Manager)
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "userId": 1, 
+  "token": "3eaee4572e0bee73e28f063ada7bc5c542452a612b1503a8352bd0bb136edc90",
+  "newPassword": "NewManagerPass2026!"
+}
+
+### Forgot Password (Employee)
+# @name forgotPasswordEmployee
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: {{contentType}}
+
+{
+  "email": "employee@test.com"
+}
+
+### Reset Password (Employee)
+POST {{baseUrl}}/auth/reset-password
+Content-Type: {{contentType}}
+
+{
+  "userId": {{loginEmployee.response.body.userId}},
+  "token": "PASTE_THE_RAW_TOKEN_HERE",
+  "newPassword": "EmployeeNewPass123!"
+}

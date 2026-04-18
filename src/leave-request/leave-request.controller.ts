@@ -3,7 +3,7 @@ import { LeaveRequestService } from './leave-request.service';
 import { CreateLeaveRequestDto } from './dtos/create-leave-request.dto';
 import { UpdateLeaveRequestDto } from './dtos/update-leave-request.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/user-roles.enum';
 
