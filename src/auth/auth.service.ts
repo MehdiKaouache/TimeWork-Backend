@@ -77,7 +77,7 @@ export class AuthService {
                 hashedPassword
             );
         return {
-            message: 'Account created successfully. Please wait for manager  to approve your access.'
+            message: 'Account created successfully. Please wait for manager to approve your access.'
         };
         } catch(e) {
             throw new InternalServerErrorException(
@@ -142,7 +142,8 @@ export class AuthService {
             accessToken: accessToken,
             refreshToken: refreshToken,
             userId: user.id,
-            message: `Welcome back, ${user.firstName}!`
+            role: user.role,
+            userFirstName: user.firstName
         };
     }
 
@@ -321,7 +322,7 @@ export class AuthService {
         });
 
         return { 
-            message: 'A reset link has been sent to your email.',
+            message: 'If an account exists with this email, a reset link has been sent.',
         };
     }
 

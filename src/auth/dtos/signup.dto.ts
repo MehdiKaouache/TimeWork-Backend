@@ -23,7 +23,7 @@ export class SignupDTO {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(6, { message: 'Password is too short (minimum 6 characters)' })
+  @MinLength(8, { message: 'Password is too short (minimum 8 characters)' })
   @MaxLength(50)
   password: string;
 }
