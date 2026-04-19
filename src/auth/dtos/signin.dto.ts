@@ -1,4 +1,9 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { 
+  IsEmail, 
+  IsNotEmpty, 
+  IsString
+} from 'class-validator';
+
 import { Transform } from 'class-transformer';
 
 export class SigninDTO {
@@ -10,6 +15,5 @@ export class SigninDTO {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
   password: string;
 }

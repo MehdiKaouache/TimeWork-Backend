@@ -14,22 +14,27 @@ import { Shift } from './shift/entities/shift.entity';
 import { ScheduleModule } from './schedule/schedule.module';
 import { Schedule } from './schedule/entities/schedule.entity';
 import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
-    MailerModule.forRoot({
-      transport: {
-        host: 'sandbox.smtp.mailtrap.io',
-        port: 2525,
-        auth: {
-          user: 'b57c6e8a2df510',
-          pass: '2235807da3e4f7'
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: 'sandbox.smtp.mailtrap.io',
+          port: 2525,
+          auth: {
+            user: configService.get<string>('MAILER_USER'),
+            pass: configService.get<string>('MAILER_PASS'),
+          },
         },
-      },
-      defaults: {
-        from: '"TimeWork Support" <noreply@timework.com>',
-      },
+        defaults: {
+          from: '"TimeWork Support" <noreply@timework.com>',
+        },
+      }),
     }),
     ConfigModule.forRoot(
     {

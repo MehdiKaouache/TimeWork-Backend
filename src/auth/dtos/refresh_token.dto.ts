@@ -1,7 +1,11 @@
-// dtos/refresh-token.dto.ts
-import { IsNumber, IsString, IsNotEmpty } from 'class-validator';
+import {
+    IsNumber,
+    IsString, 
+    IsNotEmpty
+} from 'class-validator';
 
 export class RefreshTokenDTO {
+
     @IsNumber()
     @IsNotEmpty()
     userId: number;
