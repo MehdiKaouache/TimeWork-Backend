@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateAvailabilityDto } from './dtos/create-availability.dto';
-import { UpdateAvailabilityDto } from './dtos/update-availability.dto';
+import { CreateAvailabilityDto } from './dto/create-availability.dto';
+import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Availability } from './entities/availability.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Availability } from './entity/availability.entity';
+import { User } from 'src/users/entity/user.entity';
 
 @Injectable()
 export class AvailabilityService {

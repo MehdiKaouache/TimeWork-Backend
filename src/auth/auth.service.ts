@@ -1,11 +1,10 @@
 import { UsersService } from 'src/users/users.service';
-import { randomBytes, scrypt as _scrypt, timingSafeEqual, createHash } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { promisify } from 'util';
-import { UpdateLoginDTO } from './dtos/update_login.dto';
+import { UpdateLoginDTO } from './dto/update_login.dto';
 import { UserStatus } from 'src/common/enums/user-status.enum';
 import { MailerService } from '@nestjs-modules/mailer';
+import { HashUtils } from 'src/common/hash.util';
 
 import { 
     BadRequestException,
@@ -17,35 +16,7 @@ import {
     UnauthorizedException,
     Logger
 } from '@nestjs/common';
-
-const scrypt = promisify(_scrypt);
-
-/**
- * Hashes a value using scrypt and a 16-byte salt.
- * @param value - The plain text value to hash
- * @returns A string containing the salt and the hash separated by a colon
- */
-async function hashValue(value: string): Promise<string> {
-    const salt = randomBytes(8).toString('hex');
-    const hash = (await scrypt(value, salt, 32)) as Buffer; 
-    return `${salt}:${hash.toString('hex')}`;
-}
-
-/**
- * Verifies a plain text value against a stored hash.
- * @param value - The plain text value to verify
- * @param storedHash - The stored string containing the salt and hash
- * @returns Boolean indicating if the value matches the hash
- */
-async function verifyHash(value: string, storedHash: string): Promise<boolean> {
-    const [salt, hash] = storedHash.split(':');
-    const inputHash = (await scrypt(value, salt, 32)) as Buffer;
-    const storedHashBuffer = Buffer.from(hash, 'hex');
-
-    if (inputHash.length !== storedHashBuffer.length) return false;
-
-    return timingSafeEqual(inputHash, storedHashBuffer);
-}
+import { createHash, randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -78,7 +49,7 @@ export class AuthService {
             throw new ConflictException('This email is already registered. Please try logging in instead.');
         }
 
-        const hashedPassword = await hashValue(password);
+        const hashedPassword = await HashUtils.hashValue(password);
 
         try {
             await this.usersService.createUser(
@@ -128,7 +99,7 @@ export class AuthService {
             throw new ForbiddenException('This account has been deactivated. Please contact your administrator.');
         }
 
-        const isPasswordValid = await verifyHash(password, user.password);
+        const isPasswordValid = await HashUtils.verifyHash(password, user.password);
 
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid email or password. Please check your credentials.');
@@ -146,7 +117,7 @@ export class AuthService {
             this.jwtService.signAsync(payload, { expiresIn: '7d' }),
         ]);
 
-        const hashedRefreshToken = await hashValue(refreshToken);
+        const hashedRefreshToken = await HashUtils.hashValue(refreshToken);
         await this.usersService.updateRefreshToken(user.id, hashedRefreshToken);
 
         return {
@@ -173,7 +144,7 @@ export class AuthService {
             throw new UnauthorizedException('Your session has expired or you have logged out. Please sign in again.');
         }
 
-        const isRefreshTokenValid = await verifyHash(refreshToken, user.refreshToken);
+        const isRefreshTokenValid = await HashUtils.verifyHash(refreshToken, user.refreshToken);
 
         if (!isRefreshTokenValid) {
             throw new UnauthorizedException('Invalid session. For security reasons, please log in again.');
@@ -240,7 +211,7 @@ export class AuthService {
             throw new BadRequestException('Please provide a new email or a new password to update.');
         }
 
-        const isPasswordValid = await verifyHash(body.currentPassword, user.password);
+        const isPasswordValid = await HashUtils.verifyHash(body.currentPassword, user.password);
         
         if (!isPasswordValid) {
             throw new BadRequestException('The current password you provided is incorrect.');
@@ -261,7 +232,7 @@ export class AuthService {
         }
         
         if (body.newPassword && body.newPassword.trim().length > 0) {
-            updatedPassword = await hashValue(body.newPassword);
+            updatedPassword = await HashUtils.hashValue(body.newPassword);
         }
 
         await this.usersService.updateUserCredentials(userId, updatedEmail, updatedPassword);
@@ -356,7 +327,7 @@ export class AuthService {
             throw new UnauthorizedException('The reset link is invalid or has expired.');
         }
 
-        const hashedPassword = await hashValue(newPassword);
+        const hashedPassword = await HashUtils.hashValue(newPassword);
         await this.usersService.updatePassword(user.id, hashedPassword);
         
         await this.usersService.savePasswordResetToken(user.id, null, null);

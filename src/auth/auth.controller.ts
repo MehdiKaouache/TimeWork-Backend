@@ -1,9 +1,9 @@
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { SignupDTO } from './dtos/signup.dto';
-import { SigninDTO } from './dtos/signin.dto';
-import { UpdateLoginDTO } from './dtos/update_login.dto';
-import { RefreshTokenDTO } from './dtos/refresh_token.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { SignupDTO } from './dto/signup.dto';
+import { SigninDTO } from './dto/signin.dto';
+import { UpdateLoginDTO } from './dto/update_login.dto';
+import { RefreshTokenDTO } from './dto/refresh-token.dto';
 
 import { 
   Body, 
@@ -15,8 +15,8 @@ import {
   HttpCode,
   HttpStatus
 } from '@nestjs/common';
-import { ForgotPasswordDTO } from './dtos/forgot_password.dto';
-import { ResetPasswordDTO } from './dtos/reset_password.dto';
+import { ForgotPasswordDTO } from './dto/forgot-password.dto';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
 
 
 @Controller('auth')

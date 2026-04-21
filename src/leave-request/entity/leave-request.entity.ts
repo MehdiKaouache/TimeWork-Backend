@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn, UpdateDateColumn, Index } from "typeorm";
-import { User } from "../../users/entities/user.entity";
+import { User } from "../../users/entity/user.entity";
 import { LeaveStatus } from "src/common/enums/leave-status.enum";
 
 // L'entité LeaveRequest représente une demande de congé dans le système, avec des propriétés telles 

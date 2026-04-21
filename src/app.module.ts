@@ -3,16 +3,16 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user.entity';
+import { User } from './users/entity/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { LeaveRequest } from './leave-request/entities/leave-request.entity';
-import { Availability } from './availability/entities/availability.entity';
+import { LeaveRequest } from './leave-request/entity/leave-request.entity';
+import { Availability } from './availability/entity/availability.entity';
 import { AvailabilityModule } from './availability/availability.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
 import { ShiftModule } from './shift/shift.module';
-import { Shift } from './shift/entities/shift.entity';
+import { Shift } from './shift/entity/shift.entity';
 import { ScheduleModule } from './schedule/schedule.module';
-import { Schedule } from './schedule/entities/schedule.entity';
+import { Schedule } from './schedule/entity/schedule.entity';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -32,7 +32,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
           },
         },
         defaults: {
-          from: '"TimeWork Support" <noreply@timework.com>',
+          from: 'TimeWork Support <noreply@timework.com>',
         },
       }),
     }),
@@ -44,8 +44,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 
    TypeOrmModule.forRoot(
     {
-      type: "sqlite",
-      database: "db.sqlite",
+      type: 'sqlite',
+      database: 'db.sqlite',
       entities: [User, LeaveRequest, Availability, Shift, Schedule],
       synchronize: true,
     }

@@ -1,7 +1,7 @@
 import { Expose } from "class-transformer";
+import { UserRole } from "src/common/enums/user-roles.enum";
 
-export class UserResponseDto {
-
+export class UserListDto {
   @Expose()
   id: number;
 
@@ -18,14 +18,5 @@ export class UserResponseDto {
   email: string;
 
   @Expose()
-  role: string;
-
-  @Expose()
-  hourlyRate: number;
-
-  @Expose()
-  isActive: boolean;
-
-  @Expose()
-  createdAt: Date;
+  role: UserRole;
 }

@@ -1,10 +1,10 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Schedule } from './entities/schedule.entity';
+import { Schedule } from './entity/schedule.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateScheduleDto } from './dtos/create-schedule.dto';
-import { UpdateScheduleDto } from './dtos/update-schedule.dto';
-import { Shift } from 'src/shift/entities/shift.entity';
+import { CreateScheduleDto } from './dto/create-schedule.dto';
+import { UpdateScheduleDto } from './dto/update-schedule.dto';
+import { Shift } from 'src/shift/entity/shift.entity';
 
 @Injectable()
 export class ScheduleService {

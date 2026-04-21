@@ -9,14 +9,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-
-  @Get('status')
-  getStatus() {
-    return {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      version: '2.1.0',
-    };
-  }
 }

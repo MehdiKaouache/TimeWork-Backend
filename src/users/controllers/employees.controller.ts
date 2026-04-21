@@ -1,14 +1,15 @@
 import { Controller, Param, ParseIntPipe, Post, UseGuards, Body, Get, Patch, Delete } from '@nestjs/common';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserRole } from 'src/common/enums/user-roles.enum';
 import { LeaveRequestService } from 'src/leave-request/leave-request.service';
 import { AvailabilityService } from 'src/availability/availability.service';
-import { CreateAvailabilityDto } from 'src/availability/dtos/create-availability.dto';
-import { UpdateAvailabilityDto } from 'src/availability/dtos/update-availability.dto';
-import { CreateLeaveRequestDto } from 'src/leave-request/dtos/create-leave-request.dto';
-import { UpdateLeaveRequestDto } from 'src/leave-request/dtos/update-leave-request.dto';
+import { CreateAvailabilityDto } from 'src/availability/dto/create-availability.dto';
+import { UpdateAvailabilityDto } from 'src/availability/dto/update-availability.dto';
+import { CreateLeaveRequestDto } from 'src/leave-request/dto/create-leave-request.dto';
+import { UpdateLeaveRequestDto } from 'src/leave-request/dto/update-leave-request.dto';
+import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 
 @Controller('employee')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -20,64 +21,72 @@ export class EmployeeController {
         private readonly leaveRequestService: LeaveRequestService
     ) {}
 
-    @Post('availability/:userId')
+    // --- Availabilities --- //
+
+    @Post('availability')
     createAvailability(
-        @Param('userId', ParseIntPipe) userId: number,
+        @CurrentUser('id') userId: number, 
         @Body() body: CreateAvailabilityDto
     ) {
         return this.availabilityService.createAvailability(userId, body);
     }
 
-    @Get('availability/:userId')
-    getAvailability(
-        @Param('userId', ParseIntPipe) userId: number
-    ) {
+    @Get('availability')
+    getMyAvailability(@CurrentUser('id') userId: number) {
         return this.availabilityService.getUserAvailabilites(userId);
+    }
+
+    @Delete('availability/:id')
+    deleteAvailability(
+        @Param('id', ParseIntPipe) id: number, 
+        @CurrentUser('id') userId: number
+    ) {
+        // On passe userId pour vérifier que la ressource lui appartient
+        return this.availabilityService.deleteAvailability(id, userId);
     }
 
     @Patch('availability/:id')
     updateAvailability(
         @Param('id', ParseIntPipe) id: number,
-        @Body() body: UpdateAvailabilityDto
+        @Body() body: UpdateAvailabilityDto,
+        @CurrentUser('id') userId: number
     ) {
-        return this.availabilityService.updateAvailability(id, body);
+        // Idem ici
+        return this.availabilityService.updateAvailability(id, userId, body);
     }
 
-    @Delete('availability/:id')
-    deleteAvailability(
-        @Param('id', ParseIntPipe) id: number
-    ) {
-        return this.availabilityService.deleteAvailability(id);
-    }
+    // --- Leave Requests --- //
 
-    @Post('leave-request/:userId')
+    @Post('leave-request')
     createLeaveRequest(
-        @Param('userId', ParseIntPipe) userId: number,
+        @CurrentUser('id') userId: number, 
         @Body() body: CreateLeaveRequestDto
     ) {
         return this.leaveRequestService.createLeaveRequest(userId, body);
     }
 
-    @Get('leave-request/:userId')
-    getLeaveRequests(
-        @Param('userId', ParseIntPipe) userId: number
-    ) {
+    @Get('leave-request')
+    getLeaveRequests(@CurrentUser('id') userId: number) {
+        // CORRECTION : On utilise le userId du token, pas un @Param inexistant
         return this.leaveRequestService.getUserLeaveRequests(userId);
+    }
+
+    @Delete('leave-request/:id')
+    deleteLeaveRequest(
+        @Param('id', ParseIntPipe) id: number,
+        @CurrentUser('id') userId: number
+    ) {
+        // On passe userId pour vérifier que la ressource lui appartient
+        return this.leaveRequestService.deleteLeaveRequest(id, userId);
     }
 
     @Patch('leave-request/:id')
     updateLeaveRequest(
         @Param('id', ParseIntPipe) id: number,
+        @CurrentUser('id') userId: number,
         @Body() body: UpdateLeaveRequestDto
     ) {
-        return this.leaveRequestService.updateLeaveRequest(id, body);
-    }
-
-
-    @Delete('leave-request/:id')
-    deleteLeaveRequest(
-        @Param('id', ParseIntPipe) id: number
-    ) {
-        return this.leaveRequestService.deleteLeaveRequest(id);
+        // Idem ici
+        return this.leaveRequestService.updateLeaveRequest(id, userId, body);
     }
 }

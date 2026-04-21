@@ -1,9 +1,9 @@
 import { Exclude } from "class-transformer";
-import { Shift } from "../../shift/entities/shift.entity";
+import { Shift } from "../../shift/entity/shift.entity";
 import { UserRole } from "src/common/enums/user-roles.enum";
 import { UserStatus } from "src/common/enums/user-status.enum";
-import { LeaveRequest } from "../../leave-request/entities/leave-request.entity";
-import { Availability } from "../../availability/entities/availability.entity";
+import { LeaveRequest } from "../../leave-request/entity/leave-request.entity";
+import { Availability } from "../../availability/entity/availability.entity";
 import { DEFAULT_ROLE_SALARY } from "src/common/constants/default-role-salary";
 
 import { 
@@ -19,11 +19,12 @@ import {
     ManyToOne,
     JoinColumn,
     Index,
+    RelationId,
 } from "typeorm"
 
 /**
  * Represents a system user (Employee or Manager).
- * Includes authentication data, organizational roles, and scheduling relations.
+ * Optimized for SQLite and NestJS Authentication.
  */
 @Entity('users')
 export class User {
@@ -31,14 +32,10 @@ export class User {
     @PrimaryGeneratedColumn({ type: 'int' })
     id: number;
 
-    /**
-     * Unique identifier for employees (e.g., EMP12345).
-     * Generated automatically before insertion based on the user's role.
-     */
     @Index({ unique: true })
     @Column({
         type: 'varchar', 
-        length: 12,  
+        length: 15,  
         nullable: false
     })
     employeeNumber: string;
@@ -57,10 +54,6 @@ export class User {
     })
     lastName: string;
 
-    /**
-     * Unique email address used for authentication.
-     * Normalized to lowercase via entity hooks.
-     */
     @Index({ unique: true })
     @Column({
         type: 'varchar',
@@ -68,7 +61,7 @@ export class User {
         nullable: false
     })
     email: string;
-    
+
     @Exclude()
     @Column({
         type: 'varchar',
@@ -76,6 +69,12 @@ export class User {
         nullable: false
     })
     password: string;
+    
+    // --- Security & Tokens --- //
+    
+    @Exclude()
+    @Column({ type: 'varchar', nullable: true })
+    refreshToken: string | null;
 
     @Exclude()
     @Column({ type: 'varchar', nullable: true })
@@ -84,19 +83,19 @@ export class User {
     @Column({ type: 'datetime', nullable: true })
     passwordResetExpiresAt: Date | null;
 
+    // --- Statuts & Roles ---//
+
     @Column({
         type: 'simple-enum',
         enum: UserRole,
         default: UserRole.NEW_HIRE,
-        nullable: false
-     })
+    })
     role: UserRole;
     
     @Column({
         type: 'simple-enum',
         enum: UserStatus,
         default: UserStatus.PENDING,
-        nullable: false
     })
     status: UserStatus;
 
@@ -107,10 +106,8 @@ export class User {
     })
     isActive: boolean;
 
-    /**
-     * Financial rate per hour. 
-     * Uses a transformer to ensure values are treated as numbers in JS.
-     */
+    // --- RH & Paye --- //
+
     @Column({
         type: 'decimal',
         precision: 10,
@@ -119,32 +116,35 @@ export class User {
         nullable: false,
         transformer: {
             to: (value: number) => value,
-            from: (value: string) => parseFloat(value)
+            from: (value: string) => parseFloat(value) || 0
         }
     })
     hourlyRate: number;
 
-    @Column({ nullable: true })
-    approvedAt?: Date;
+    @Column({ type: 'varchar', nullable: true})
+    phoneNumber: string;
+
+    @Column({ type:'datetime', nullable: true })
+    approvedAt: Date | null;
+
+    @RelationId((user: User) => user.approvedBy)
+    approvedById: number | null;
+
+    // --- Audit --- //
 
     @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
-    updatedAt?: Date;
-
-    @DeleteDateColumn()
-    deletedAt?: Date;
+    updatedAt: Date;
 
     @Exclude()
-    @Column({ type: 'varchar', nullable: true })
-    refreshToken: string | null;
+    @DeleteDateColumn()
+    deletedAt: Date | null;
 
-    // --- Hooks ---
 
-    /**
-     * Normalizes the email to lowercase and trims whitespace before persistence.
-     */
+    // --- Hooks --- //
+
     @BeforeInsert()
     @BeforeUpdate()
     normalizeEmail() {
@@ -153,46 +153,31 @@ export class User {
         }
     }
 
-    /**
-     * Set default hourly rate based 
-     */
     @BeforeInsert()
     setInitialHourlyRate() {
-        // Only set the default if hourlyRate is 0 or not provided
         if (!this.hourlyRate || this.hourlyRate === 0) {
             this.hourlyRate = DEFAULT_ROLE_SALARY[this.role] || 0;
         }
     }
 
-    /**
-     * Generates a unique employee number based on the assigned role and current timestamp.
-     */
     @BeforeInsert()
     generateEmployeeNumber() {
-        const timePart = Date.now().toString().slice(-5);
-        const randomPart = Math.floor(100 + Math.random() * 900);
+        if (!this.employeeNumber) {
+            const timePart = Date.now().toString().slice(-5);
+            const randomPart = Math.floor(100 + Math.random() * 900);
+            const prefix = this.role === UserRole.MANAGER ? 'MAN' :
+                this.role === UserRole.ASSISTANT_MANAGER ? 'ASM' : 'EMP';
 
-        switch (this.role) {
-            case UserRole.MANAGER:
-                this.employeeNumber = `MAN${timePart}${randomPart}`;
-                break;
-            case UserRole.ASSISTANT_MANAGER:
-                this.employeeNumber = `ASM${timePart}${randomPart}`;
-                break;
-            default:
-                this.employeeNumber = `EMP${timePart}${randomPart}`;
-        }  
+            this.employeeNumber = `${prefix}${timePart}${randomPart}`;        
+        }
     }
 
 
-    // --- Relations ---
+    // --- Relations --- //
 
-    /**
-     * The Manager who approved this user's account.
-     */
     @ManyToOne(() => User, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'approved_by_id' })
-    approvedBy?: User;
+    approvedBy: User | null;
 
 
     @OneToMany(() => Shift, (shift) => shift.user)

@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CreateLeaveRequestDto } from './dtos/create-leave-request.dto';
-import { UpdateLeaveRequestDto } from './dtos/update-leave-request.dto';
-import { LeaveRequest } from './entities/leave-request.entity';
+import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
+import { UpdateLeaveRequestDto } from './dto/update-leave-request.dto';
+import { LeaveRequest } from './entity/leave-request.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { User } from 'src/users/entity/user.entity';
 import { LeaveStatus } from 'src/common/enums/leave-status.enum';
 
 @Injectable()

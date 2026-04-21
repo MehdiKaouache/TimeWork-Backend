@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { User } from './entities/user.entity';
+import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserStatus } from '../common/enums/user-status.enum';
 import { UserRole } from '../common/enums/user-roles.enum';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
+import { UpdateUserInfoDTO } from './dto/update-user.dto';
+import { SetUserRoleSalaryDTO } from './dto/set-user-role-salary.dto';
+import { HashUtils } from 'src/common/hash.util';
 
 const scrypt = promisify(_scrypt);
 
@@ -15,22 +19,72 @@ export class UsersService {
     constructor(
         @InjectRepository(User)
         private readonly usersRepository: Repository<User>,
+        private readonly configService: ConfigService
     ) {}
+
+    async onModuleInit() {
+        await this.createInitialManager();
+    }
     
     /**
      * Retrieves all users from the database.
      * @returns An array of User entities.
-     * @throws NotFoundException if no users exist.
      */
     async findAll(): Promise<User[]> {
 
         const users = await this.usersRepository.find();
-        
-        if (!users || users.length === 0) {
-            throw new NotFoundException('No users found');
-        }
 
         return users;
+    }
+
+    /**
+     *  
+     * @returns An array of active User entities.
+     */
+    async findAllActive(): Promise<User[]> {
+        return await this.usersRepository.find({
+            where: { isActive: true, status: UserStatus.APPROVED }
+        });
+    }
+
+    /**
+     *  
+     * @returns An array of deactivated User entities.
+     */
+    async findAllDeactivated(): Promise<User[]> {
+        return await this.usersRepository.find({
+            where: { isActive: false, status: UserStatus.APPROVED }
+        });
+    }
+
+    /**
+     *  
+     * @returns An array of approved User entities.
+     */
+    async findAllApproved(): Promise<User[]> {
+        return await this.usersRepository.find({
+            where: { isActive: true, status: UserStatus.APPROVED }
+        });
+    }
+
+    /**
+     * 
+     * @returns An array of rejected User entities.
+     */
+    async findAllRejected(): Promise<User[]> {
+        return await this.usersRepository.find({
+            where: { isActive: false, status: UserStatus.REJECTED }
+        });
+    }
+
+    /**
+     * 
+     * @returns An array of pending User entities.
+     */
+    async findPendingUsers(): Promise<User[]> {
+        return await this.usersRepository.find({
+            where: { status: UserStatus.PENDING }
+        });
     }
 
     /**
@@ -51,21 +105,60 @@ export class UsersService {
     }
 
     /**
+     * 
+     * @param employeeNumber 
+     * @return 
+     */
+    async findUserByEmployeeNumber(employeeNumber: string): Promise<User> {
+        const user = await this.usersRepository.findOne({ where: { employeeNumber } });
+        if (!user) {
+            throw new NotFoundException(`Employee #${employeeNumber} not found`);
+        }
+        return user;
+    }
+
+    /**
+     * 
+     * @param email 
+     * @returns 
+     */
+    async findUserByEmail(email: string): Promise<User | null> {
+        return await this.usersRepository.findOne({
+             where: { email: email.toLowerCase().trim() } 
+        });
+    }
+
+    /**
+     * Creates a new user entity.
+     * Note: Password hashing and uniqueness checks are coordinated by the AuthService.
+    */
+    async createUser(firstName: string, lastName: string, email: string, password: string) {
+
+        const user = this.usersRepository.create({
+            firstName, 
+            lastName,
+            email,
+            password
+        });
+
+        return await this.usersRepository.save(user);
+    }
+
+    /**
      * Updates general profile information for a user.
      * @param id - The ID of the user to update.
      * @param body - Object containing optional firstName and lastName.
      * @returns A success message.
      */
-    async updateUser(id: number, body: { firstName?: string; lastName?: string }) {
+    async updateUser(id: number, body: UpdateUserInfoDTO) {
 
         const user = await this.findOne(id);
 
-        if (body.firstName) { user.firstName = body.firstName; }
-        if (body.lastName) { user.lastName = body.lastName; }
+        if (Object.keys(body).length === 0) return {user};
 
-        await this.usersRepository.save(user);
+        Object.assign(user, body)
 
-        return { message: `User ${user.firstName} ${user.lastName} updated successfully` };
+        return await this.usersRepository.save(user);
     }
     
     /**
@@ -77,29 +170,12 @@ export class UsersService {
 
         const user = await this.findOne(id);
 
-        await this.usersRepository.remove(user);
+        await this.usersRepository.softRemove(user);
 
-        return { message: `User ${user.firstName} ${user.lastName} deleted successfully` };
+        return { message: `User deleted successfully` };
     }
 
-    
-    /**
-     * Creates a new user entity.
-     * Note: Password hashing and uniqueness checks are coordinated by the AuthService.
-    */
-    async createUser(firstName: string, lastName: string, email: string, password: string) {
-
-        const user = this.usersRepository.create({
-                firstName, 
-                lastName,
-                email,
-                password
-            });
-
-        return await this.usersRepository.save(user);
-    }
-
-    /**
+     /**
      * Updates a user's sensitive login credentials.
      * @param id - User ID.
      * @param email - New normalized email address.
@@ -122,72 +198,7 @@ export class UsersService {
     async updateRefreshToken(id: number, refreshToken: string | null): Promise<void> {
         await this.usersRepository.update(id, { refreshToken });
     }
-    
-    /**
-     * Finds a user by their email address.
-     * Used primarily for authentication and registration checks.
-     */
-    async findUserByEmail(email: string): Promise<User | null> {
-        return await this.usersRepository.findOne({ where: { email } });
-    }
 
-    /**
-     * Approves a pending user account.
-     * @param id - User ID.
-     */
-    async approveUser(id: number) {
-
-        const user = await this.findOne(id);
-
-        if (user.status === UserStatus.APPROVED) {
-            throw new BadRequestException("User is already approved");
-        }
-
-        user.status = UserStatus.APPROVED;
-        user.isActive = true;
-
-        await this.usersRepository.save(user);
-
-        return { message: `User ${user.firstName} ${user.lastName} approved and activated successfully` };
-    }
-
-    /**
-     * Rejects a pending user account.
-     * @param id - User ID.
-     */
-    async rejectUser(id: number) {
-
-        const user = await this.findOne(id);
-
-        if (user.status === UserStatus.REJECTED) {
-            throw new BadRequestException("User is already rejected");
-        }
-
-        user.status = UserStatus.REJECTED;
-        user.isActive = false;
-
-        await this.usersRepository.save(user);
-
-        return { message: `User ${user.firstName} ${user.lastName} rejected successfully` };
-    }
-
-    /**
-     * Sets administrative properties for a user.
-     * @param id - User ID.
-     * @param body - The role and hourly rate to assign.
-     */
-    async setUserRoleAndHourlyRate(id: number, body: { role: UserRole, hourlyRate: number }) {
-
-        const user = await this.findOne(id);
-
-        user.role = body.role;
-        user.hourlyRate = body.hourlyRate;
-
-        await this.usersRepository.save(user);
-
-        return { message: `User ${user.firstName} ${user.lastName} role and hourly rate updated successfully` };
-    }
-    
     /**
      * 
      * @param userId 
@@ -214,45 +225,121 @@ export class UsersService {
      * @returns 
      */
     async updatePassword(userId: number, hashedPassword: string): Promise<void> {
-        const user = await this.usersRepository.findOneBy({ id: userId });
 
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
-
-        user.password = hashedPassword;
-        
-        // Safety measure: clear tokens when password is changed
-        user.passwordResetToken = null;
-        user.passwordResetExpiresAt = null;
-
-        await this.usersRepository.save(user);
+        await this.usersRepository.update(userId, {
+            password: hashedPassword,
+            passwordResetToken: null,
+            passwordResetExpiresAt: null,
+            refreshToken: null 
+        });
     }
     
+    /**
+     * Approves a pending user account.
+     * @param id - User ID.
+     */
+    async approveUser(id: number, manager: User) {
+
+        const user = await this.findOne(id);
+
+        if (user.id === manager.id) {
+            throw new BadRequestException('You cannot approve your own account');
+        }
+
+        if (user.status !== UserStatus.PENDING) {
+            throw new BadRequestException(`User is not in pending status (Current: ${user.status})`);
+        }
+
+        user.status = UserStatus.APPROVED;
+        user.isActive = true;
+        user.approvedAt = new Date();
+        user.approvedBy = manager;
+
+        await this.usersRepository.save(user);
+
+        return { message: `User approved by ${manager.firstName} and activated successfully` };
+    }
+
+    /**
+     * Rejects a pending user account.
+     * @param id - User ID.
+     */
+    async rejectUser(id: number) {
+
+        const user = await this.findOne(id);
+
+        if (user.status === UserStatus.REJECTED) {
+            throw new BadRequestException("User is already rejected");
+        }
+
+        user.status = UserStatus.REJECTED;
+        user.isActive = false;
+
+        await this.usersRepository.save(user);
+
+        return { message: `User ${user.firstName} ${user.lastName} rejected successfully` };
+    }
+
+    /**
+     * 
+     * @param id 
+     * @returns 
+     */
+    async toggleUserActivation(id: number): Promise<User> {
+        const user = await this.findOne(id);
+        user.isActive = !user.isActive;
+        return await this.usersRepository.save(user);
+    }
+
+    /**
+     * Sets administrative properties for a user.
+     * @param id - User ID.
+     * @param body - The role and hourly rate to assign.
+     */
+    async setUserRoleAndHourlyRate(id: number, body: SetUserRoleSalaryDTO) {
+
+        const user = await this.findOne(id);
+
+        user.role = body.role;
+        user.hourlyRate = body.hourlyRate;
+
+        await this.usersRepository.save(user);
+
+        return { message: `User ${user.firstName} ${user.lastName} role and hourly rate updated successfully` };
+    }
+    
+    /**
+     * 
+     * @returns 
+     */
+    async countPendingUsers(): Promise<number> {
+        return await this.usersRepository.count({ where: { status: UserStatus.PENDING } });
+    }
+
     /**
      * Seeds an initial manager account for testing/first-run purposes.
      */
     async createInitialManager() {
-        const email = 'manager@test.com';
-        const existing = await this.findUserByEmail(email);
-
+        const managerEmail = this.configService.get<string>('INITIAL_MANAGER_EMAIL') || 'manager@test.com';
+        
+        const existing = await this.findUserByEmail(managerEmail);
         if (existing) return;
 
-        const password = 'password123';
-        const salt = randomBytes(8).toString("hex");
-        const hash = (await scrypt(password, salt, 32)) as Buffer;
-        const hashedPassword = `${salt}:${hash.toString('hex')}`;
+        const rawPassword = this.configService.get<string>('INITIAL_MANAGER_PASS') || 'Password123!';
+
+        const hashedPassword = await HashUtils.hashValue(rawPassword);
 
         const manager = this.usersRepository.create({
             firstName: 'Manager',
             lastName: 'Test',
-            email,
+            email: managerEmail,
             password: hashedPassword,
             role: UserRole.MANAGER,
-            isActive: true,
             status: UserStatus.APPROVED,
+            isActive: true
         });
 
-        return await this.usersRepository.save(manager);
+        await this.usersRepository.save(manager);
+        console.log(`Initial Manager created with email: ${managerEmail} and password: ${rawPassword}`);
     }
 }

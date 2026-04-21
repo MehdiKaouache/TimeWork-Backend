@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { ScheduleService } from './schedule.service';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { Roles } from 'src/common/decorator/roles.decorator';
 import { UserRole } from 'src/common/enums/user-roles.enum';
-import { CreateScheduleDto } from './dtos/create-schedule.dto';
-import { UpdateScheduleDto } from './dtos/update-schedule.dto';
+import { CreateScheduleDto } from './dto/create-schedule.dto';
+import { UpdateScheduleDto } from './dto/update-schedule.dto';
 
 @Controller('schedules')
 @UseGuards(JwtAuthGuard, RolesGuard)

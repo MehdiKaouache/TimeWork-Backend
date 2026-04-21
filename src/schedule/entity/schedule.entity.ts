@@ -1,5 +1,5 @@
 import { Entity, Index, OneToMany,  PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { Shift } from 'src/shift/entities/shift.entity';
+import { Shift } from 'src/shift/entity/shift.entity';
 
 @Entity('schedules')
 export class Schedule {
