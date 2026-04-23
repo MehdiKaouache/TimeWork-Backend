@@ -32,7 +32,9 @@ export class EmployeeController {
     }
 
     @Get('availability')
-    getMyAvailability(@CurrentUser('id') userId: number) {
+    getMyAvailability(
+        @CurrentUser('id') userId: number
+    ) {
         return this.availabilityService.getUserAvailabilites(userId);
     }
 
@@ -41,8 +43,7 @@ export class EmployeeController {
         @Param('id', ParseIntPipe) id: number, 
         @CurrentUser('id') userId: number
     ) {
-        // On passe userId pour vérifier que la ressource lui appartient
-        return this.availabilityService.deleteAvailability(id, userId);
+        return this.availabilityService.deleteAvailability(id);
     }
 
     @Patch('availability/:id')
@@ -51,8 +52,7 @@ export class EmployeeController {
         @Body() body: UpdateAvailabilityDto,
         @CurrentUser('id') userId: number
     ) {
-        // Idem ici
-        return this.availabilityService.updateAvailability(id, userId, body);
+        return this.availabilityService.updateAvailability(id, body);
     }
 
     // --- Leave Requests --- //
@@ -66,8 +66,9 @@ export class EmployeeController {
     }
 
     @Get('leave-request')
-    getLeaveRequests(@CurrentUser('id') userId: number) {
-        // CORRECTION : On utilise le userId du token, pas un @Param inexistant
+    getLeaveRequests(
+        @Param('userId', ParseIntPipe) userId: number
+    ) {
         return this.leaveRequestService.getUserLeaveRequests(userId);
     }
 
@@ -76,17 +77,14 @@ export class EmployeeController {
         @Param('id', ParseIntPipe) id: number,
         @CurrentUser('id') userId: number
     ) {
-        // On passe userId pour vérifier que la ressource lui appartient
-        return this.leaveRequestService.deleteLeaveRequest(id, userId);
+        return this.leaveRequestService.deleteLeaveRequest(id);
     }
 
     @Patch('leave-request/:id')
     updateLeaveRequest(
         @Param('id', ParseIntPipe) id: number,
-        @CurrentUser('id') userId: number,
         @Body() body: UpdateLeaveRequestDto
     ) {
-        // Idem ici
-        return this.leaveRequestService.updateLeaveRequest(id, userId, body);
+        return this.leaveRequestService.updateLeaveRequest(id, body);
     }
 }

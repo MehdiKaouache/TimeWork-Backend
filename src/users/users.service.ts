@@ -5,13 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserStatus } from '../common/enums/user-status.enum';
 import { UserRole } from '../common/enums/user-roles.enum';
-import { randomBytes, scrypt as _scrypt } from 'crypto';
-import { promisify } from 'util';
+import {  scrypt as _scrypt } from 'crypto';
 import { UpdateUserInfoDTO } from './dto/update-user.dto';
 import { SetUserRoleSalaryDTO } from './dto/set-user-role-salary.dto';
 import { HashUtils } from 'src/common/hash.util';
-
-const scrypt = promisify(_scrypt);
 
 @Injectable()
 export class UsersService {
@@ -242,10 +239,6 @@ export class UsersService {
 
         const user = await this.findOne(id);
 
-        if (user.id === manager.id) {
-            throw new BadRequestException('You cannot approve your own account');
-        }
-
         if (user.status !== UserStatus.PENDING) {
             throw new BadRequestException(`User is not in pending status (Current: ${user.status})`);
         }
@@ -321,9 +314,10 @@ export class UsersService {
      */
     async createInitialManager() {
         const managerEmail = this.configService.get<string>('INITIAL_MANAGER_EMAIL') || 'manager@test.com';
+    
+        // call create user (name, pw..)
+        // call set role (manager...)
         
-        const existing = await this.findUserByEmail(managerEmail);
-        if (existing) return;
 
         const rawPassword = this.configService.get<string>('INITIAL_MANAGER_PASS') || 'Password123!';
 

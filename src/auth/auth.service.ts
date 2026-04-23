@@ -202,10 +202,6 @@ export class AuthService {
         if (!user) {
             throw new NotFoundException('User profile not found.');
         }
-        
-        if (!user.isActive) {
-            throw new ForbiddenException('Cannot update a deactivated account.');
-        }
 
         if (!body.newEmail && !body.newPassword) {
             throw new BadRequestException('Please provide a new email or a new password to update.');
@@ -265,40 +261,17 @@ export class AuthService {
         const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173';
         const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}&userId=${user.id}`;
 
+        /**
+         *  move the frontend to the frontend repo so its more clean
+         */
         await this.mailerService.sendMail({
             to: user.email,
             subject: 'TimeWork - Password Reset Request',
-            html: `
-                <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-                    <div style="background-color: #2c3e50; padding: 20px; text-align: center;">
-                        <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">TIMEWORK</h1>
-                    </div>
-                    <div style="padding: 30px; background-color: #ffffff;">
-                        <h2 style="color: #333; margin-top: 0;">Hello ${user.firstName},</h2>
-                        <p style="color: #555; line-height: 1.6;">
-                            We received a request to reset the password for your <strong>TimeWork</strong> account. 
-                            Manage your shifts and schedule efficiently by keeping your account secure.
-                        </p>
-                        <div style="text-align: center; margin: 30px 0;">
-                            <a href="${resetUrl}" 
-                            style="background-color: #3498db; color: white; padding: 14px 25px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
-                            Reset Password
-                            </a>
-                        </div>
-                        <p style="color: #777; font-size: 14px;">
-                            <strong>Security Note:</strong> This link is only valid for 1 hour. If you did not request this, please contact your manager or system administrator immediately.
-                        </p>
-                    </div>
-                    <div style="background-color: #f4f7f6; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
-                        <p style="color: #999; font-size: 11px; margin: 0; text-transform: uppercase;">
-                            TimeWork Management System
-                        </p>
-                        <p style="color: #999; font-size: 12px; margin: 5px 0 0 0;">
-                            &copy; 2026 TimeWork - Software Development Project
-                        </p>
-                    </div>
-                </div>
-            `,
+            template: 'forgot-password', 
+            context: {
+                firstName: user.firstName,
+                resetUrl: resetUrl,
+            },
         });
 
         return { message: 'If an account exists with this email, a reset link has been sent.' };

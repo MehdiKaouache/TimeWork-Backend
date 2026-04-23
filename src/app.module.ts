@@ -16,6 +16,8 @@ import { Schedule } from './schedule/entity/schedule.entity';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { join } from 'path';
+import { EjsAdapter } from '@nestjs-modules/mailer/adapters/ejs.adapter';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       useFactory: async (configService: ConfigService) => ({
         transport: {
           host: 'sandbox.smtp.mailtrap.io',
-          port: 2525,
+          port: 587,
           auth: {
             user: configService.get<string>('MAILER_USER'),
             pass: configService.get<string>('MAILER_PASS'),
@@ -34,7 +36,14 @@ import { MailerModule } from '@nestjs-modules/mailer';
         defaults: {
           from: 'TimeWork Support <noreply@timework.com>',
         },
-      }),
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new EjsAdapter(),
+          option: {
+            strict: true
+          }
+        }
+      })
     }),
     ConfigModule.forRoot(
     {
