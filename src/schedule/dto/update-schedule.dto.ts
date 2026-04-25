@@ -1,13 +1,15 @@
-import { IsNumber, IsDateString, IsOptional, Min, Max } from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class UpdateScheduleDto {
-    @IsNumber()
+    @IsString()
     @IsOptional()
-    @Min(1)
-    @Max(52)
-    weekNumber?: number;
+    name?: string;
 
     @IsDateString()
     @IsOptional()
     startDate?: string;
+
+    @IsDateString()
+    @IsOptional()
+    endDate?: string;
 }

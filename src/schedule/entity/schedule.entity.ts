@@ -7,7 +7,7 @@ export class Schedule {
     id: number;
 
     @Column({ unique: true })
-    weekNumber: number;
+    name: string;
 
     @Column({ type: 'date' })
     startDate: Date;
