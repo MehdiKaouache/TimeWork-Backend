@@ -16,6 +16,7 @@ import { Schedule } from './schedule/entities/schedule.entity';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { NotificationsModule } from './notifications/notifications.module';
+import { Notification } from './notifications/entities/notifications.entity';
 
 @Module({
   imports: [
@@ -42,7 +43,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     {
       type: "sqlite",
       database: "db.sqlite",
-      entities: [User, LeaveRequest, Availability, Shift, Schedule],
+      entities: [User, LeaveRequest, Availability, Shift, Schedule, Notification],
       synchronize: true,
     }
   ),

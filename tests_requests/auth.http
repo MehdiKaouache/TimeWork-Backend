@@ -22,9 +22,9 @@ POST {{baseUrl}}/auth/signup
 Content-Type: {{contentType}}
 
 {
-  "firstName": "Employee",
+  "firstName": "Kersen",
   "lastName": "Test",
-  "email": "employee@test.com",
+  "email": "kersen@test.com",
   "password": "password123"
 }
 

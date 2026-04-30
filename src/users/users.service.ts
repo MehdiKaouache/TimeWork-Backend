@@ -6,6 +6,8 @@ import { UserStatus } from '../common/enums/user-status.enum';
 import { UserRole } from '../common/enums/user-roles.enum';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationType } from 'src/notifications/enums/notification-type.enum';
 
 const scrypt = promisify(_scrypt);
 
@@ -15,6 +17,7 @@ export class UsersService {
     constructor(
         @InjectRepository(User)
         private readonly usersRepository: Repository<User>,
+        private readonly notificationsService: NotificationsService
     ) {}
     
     /**
@@ -96,7 +99,15 @@ export class UsersService {
                 password
             });
 
-        return await this.usersRepository.save(user);
+        const savedUser = await this.usersRepository.save(user);
+
+        await this.notificationsService.notify(
+            savedUser.id,
+            NotificationType.ACCOUNT_CREATED,
+            { name : savedUser.firstName }
+        )
+
+        return savedUser
     }
 
     /**
@@ -147,6 +158,12 @@ export class UsersService {
         user.isActive = true;
 
         await this.usersRepository.save(user);
+
+        await this.notificationsService.notify(
+            user.id, 
+            NotificationType.ACCOUNT_APPROVED, 
+            { status: 'actif' }
+        );
 
         return { message: `User ${user.firstName} ${user.lastName} approved and activated successfully` };
     }

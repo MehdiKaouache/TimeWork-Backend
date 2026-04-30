@@ -8,9 +8,10 @@ import { EmployeeController } from './controllers/employees.controller';
 import { ManagersController } from './controllers/managers.controller';
 import { AvailabilityModule } from 'src/availability/availability.module';
 import { LeaveRequestModule } from 'src/leave-request/leave-request.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), AvailabilityModule, LeaveRequestModule],
+  imports: [TypeOrmModule.forFeature([User]), AvailabilityModule, LeaveRequestModule, NotificationsModule],
   providers: [UsersService, CurrentUserMiddleware
   ],
   controllers: [UsersController, EmployeeController, ManagersController],
