@@ -18,6 +18,7 @@ import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { EjsAdapter } from '@nestjs-modules/mailer/adapters/ejs.adapter';
+import { Company } from './company/entity/company.entity';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { EjsAdapter } from '@nestjs-modules/mailer/adapters/ejs.adapter';
     {
       type: 'sqlite',
       database: 'db.sqlite',
-      entities: [User, LeaveRequest, Availability, Shift, Schedule],
+      entities: [User, LeaveRequest, Availability, Shift, Schedule, Company],
       synchronize: true,
     }
   ),

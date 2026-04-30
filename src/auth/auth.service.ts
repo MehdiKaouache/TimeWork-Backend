@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { UpdateLoginDTO } from './dto/update_login.dto';
 import { UserStatus } from 'src/common/enums/user-status.enum';
 import { MailerService } from '@nestjs-modules/mailer';
-import { HashUtils } from 'src/common/hash.util';
+import { HashUtils } from 'src/common/utils/hash.util';
 
 import { 
     BadRequestException,
@@ -41,7 +41,7 @@ export class AuthService {
      * @throws ConflictException if the email is already in use
      * @throws InternalServerErrorException if the creation process fails
      */
-    async signup(firstName: string, lastName: string, email: string, password: string) {
+    async signup(firstName: string, lastName: string, email: string, password: string, phoneNumber: string) {
         const normalizedEmail = email.toLowerCase().trim();
         const existingUser = await this.usersService.findUserByEmail(normalizedEmail);
         
@@ -55,8 +55,9 @@ export class AuthService {
             await this.usersService.createUser(
                 firstName.trim(), 
                 lastName.trim(), 
-                email, 
-                hashedPassword
+                email,
+                phoneNumber.trim(),
+                hashedPassword,
             );
             
             return {
@@ -99,7 +100,7 @@ export class AuthService {
             throw new ForbiddenException('This account has been deactivated. Please contact your administrator.');
         }
 
-        const isPasswordValid = await HashUtils.verifyHash(password, user.password);
+        const isPasswordValid = await HashUtils.verifyHash(user.password, password);
 
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid email or password. Please check your credentials.');

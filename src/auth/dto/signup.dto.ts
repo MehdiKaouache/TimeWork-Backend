@@ -34,9 +34,16 @@ export class SignupDTO {
   @IsNotEmpty()
   @MinLength(8, { message: 'Password is too short (minimum 8 characters)' })
   @MaxLength(50)
-  // Ajoute d'une règle pour forcer au moins une majuscule et un chiffre
   @Matches(PASSWORD_REGEX, {
     message: 'Password is too weak. It must contain at least one uppercase letter and one number or special character.',
   })
   password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(20)
+  @Matches(/^\+?[0-9]{7,20}$/, {
+    message: 'Please provide a valid phone number (7-20 digits, optional leading +)',
+  })
+  phoneNumber: string;
 }
