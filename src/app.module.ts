@@ -15,6 +15,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { Schedule } from './schedule/entities/schedule.entity';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -50,7 +51,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
     AvailabilityModule,
     LeaveRequestModule,
     ShiftModule,
-    ScheduleModule
+    ScheduleModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [AppService],
