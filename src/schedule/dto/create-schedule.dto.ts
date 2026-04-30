@@ -1,13 +1,15 @@
-import { IsDateString, IsEmpty, IsNotEmpty, IsNumber, Max, Min } from "class-validator";
+import { IsDateString, IsNotEmpty, IsString } from "class-validator";
 
-export class CreateScheduleDto{
-    @IsNumber()
+export class CreateScheduleDto {
+    @IsString()
     @IsNotEmpty()
-    @Min(1)
-    @Max(52)
-    weekNumber: number;
+    name: string;
 
     @IsDateString()
     @IsNotEmpty()
     startDate: string;
+
+    @IsDateString()
+    @IsNotEmpty()
+    endDate: string;
 }

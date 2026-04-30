@@ -26,6 +26,12 @@ export class Availability {
     })
     dayOfWeek: DayOfWeek;
 
+    @Column({ type: 'date' })
+    rangeStartDate: Date;
+
+    @Column({ type: 'date' })
+    rangeEndDate: Date;
+
     // La propriété isAvailable sert à indiquer si l'utilisateur est 
     // disponible ou non pour le jour de la semaine spécifié.
     @Column({

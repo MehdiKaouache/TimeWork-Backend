@@ -1,84 +1,68 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Schedule } from './entity/schedule.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
-import { Shift } from 'src/shift/entity/shift.entity';
 
 @Injectable()
 export class ScheduleService {
     constructor(
         @InjectRepository(Schedule)
-        private readonly scheduleRepo: Repository<Schedule>,
-
-        @InjectRepository(Shift)
-        private readonly shiftRepo: Repository<Shift>
+        private readonly scheduleRepo: Repository<Schedule>
     ){}
 
     async createSchedule(dto: CreateScheduleDto){
-        const shiftExists = await this.shiftRepo.count();
-        
-        if (shiftExists === 0) {
-            throw new BadRequestException('Cannot create schedule: No shifts available');
-        }
-
-        const existing = await this.scheduleRepo.findOneBy({weekNumber: dto.weekNumber});
-
+        const existing = await this.scheduleRepo.findOneBy({ name: dto.name });
         if(existing){
-            throw new BadRequestException('Schedule already exists');
+            throw new BadRequestException('A schedule with this name already exists');
         }
-
-        const start = new Date(dto.startDate);
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
 
         const schedule = this.scheduleRepo.create({
-            weekNumber: dto.weekNumber,
-            startDate: start,
-            endDate: end
+            name: dto.name,
+            startDate: new Date(dto.startDate),
+            endDate: new Date(dto.endDate)
         });
 
         return await this.scheduleRepo.save(schedule);
     }
 
-    async getAllSchedule(){
-        return await this.scheduleRepo.find();
+    async getAllSchedule() {
+        return await this.scheduleRepo.find({ order: { startDate: 'DESC' } });
     }
 
     async findOneSchedule(id: number){
         const schedule = await this.scheduleRepo.findOneBy({id});
-        if (!schedule){
-            throw new NotFoundException('Schedule not found');
+        if (!schedule) {
+            throw new NotFoundException('Schedule not found')
         }
         return schedule;
     }
 
-    async upadteSchedule(id: number, dto: UpdateScheduleDto){
+    async updateSchedule(id: number, dto: UpdateScheduleDto){
         const schedule = await this.findOneSchedule(id);
 
-        if(dto.weekNumber){
-            const existing = await this.scheduleRepo.findOneBy({weekNumber: dto.weekNumber});
-            if(existing && existing.id !== id){
-                throw new BadRequestException('Week number already in use');
+        if (dto.name) {
+            const existing = await this.scheduleRepo.findOneBy({ name: dto.name });
+            if (existing && existing.id !== id) {
+                throw new BadRequestException('Name already in use');
             }
-            schedule.weekNumber = dto.weekNumber;
+            schedule.name = dto.name;
         }
-
-        if(dto.startDate){
-            const start = new Date(dto.startDate);
-            schedule.startDate = start;
-            const end = new Date(start);
-            end.setDate(start.getDate() + 6);
-            schedule.endDate = end;
+        if(dto.startDate) {
+            schedule.startDate = new Date(dto.startDate);
         }
-        
+        if (dto.endDate) {
+            schedule.endDate = new Date(dto.endDate);
+        }
         return await this.scheduleRepo.save(schedule);
     }
 
     async removeSchedule(id: number){
-        const schedule = await this.findOneSchedule(id)
+        const schedule = await this.findOneSchedule(id);
         await this.scheduleRepo.remove(schedule);
-        return { message: 'Schedule deleted successfully'};
+        return { 
+            message: 'Schedule deleted successfully'
+        };
     }
 }

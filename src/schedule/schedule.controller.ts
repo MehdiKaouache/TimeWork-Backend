@@ -31,7 +31,7 @@ export class ScheduleController {
     @Patch(':id')
     @Roles(UserRole.MANAGER)
     update(@Param('id', ParseIntPipe) id: number, @Body() updateScheduleDto: UpdateScheduleDto){
-        return this.scheduleService.upadteSchedule(id, updateScheduleDto);
+        return this.scheduleService.updateSchedule(id, updateScheduleDto);
     }
 
     @Delete(':id')
