@@ -23,9 +23,9 @@ export class UsersService {
      * This ensures there's at least one admin user to manage the system on first run.
      * The credentials are logged to the console for easy access during development/testing.
      */
-    async onModuleInit(): Promise<void> {
-        await this.createInitialManager();
-    }
+    // async onModuleInit(): Promise<void> {
+    //     await this.createInitialManager();
+    // }
     
     /**
      * Retrieves all users from the database.
