@@ -1,6 +1,7 @@
 import { UserRole } from "../enums/user-roles.enum";
 
 export const DEFAULT_ROLE_SALARY: Record<UserRole, number> = {
+  [UserRole.SUPER_ADMIN]: 0,
   [UserRole.MANAGER]: 35,
   [UserRole.ASSISTANT_MANAGER]: 28,
   [UserRole.EMPLOYEE]: 24,

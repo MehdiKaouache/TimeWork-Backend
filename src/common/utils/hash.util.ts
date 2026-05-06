@@ -1,4 +1,3 @@
-// src/common/utils/hash.util.ts
 import { promisify } from 'util';
 import { scrypt as _scrypt, randomBytes } from 'crypto';
 
@@ -23,9 +22,9 @@ export class HashUtils {
     * @param storedHash - The stored string containing the salt and hash
     * @returns Boolean indicating if the value matches the hash
     */
-    static async verifyHash(storedPassword: string, suppliedPassword: string): Promise<boolean> {
-        const [salt, storedHash] = storedPassword.split(':');
-        const hash = (await scrypt(suppliedPassword, salt, 32)) as Buffer;
-        return storedHash === hash.toString('hex');
-    }
+static async verifyHash(hashFromDb: string, plainPassword: string): Promise<boolean> {
+    const [salt, storedHash] = hashFromDb.split(':');
+    const hash = (await scrypt(plainPassword, salt, 32)) as Buffer;
+    return storedHash === hash.toString('hex');
+}
 }

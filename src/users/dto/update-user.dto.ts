@@ -12,4 +12,10 @@ export class UpdateUserInfoDTO {
     @MaxLength(100)
     @IsNotEmpty()
     lastName : string
+
+    @IsString()
+    @IsOptional()
+    @MaxLength(20)
+    @IsNotEmpty()
+    phoneNumber : string
 }
