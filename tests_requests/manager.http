@@ -3,8 +3,8 @@ GET http://localhost:3000/managers/users
 Authorization: Bearer MANAGER_TOKEN
 
 ### Approve User
-PATCH http://localhost:3000/managers/users/2/approve
-Authorization: Bearer MANAGER_TOKEN
+PATCH http://localhost:3000/managers/users/3/approve
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoibWFuYWdlckB0ZXN0LmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiZW1wbG95ZWVOdW1iZXIiOiJNQU45NTYxNzE5NSIsImlhdCI6MTc3ODUxNDMyMiwiZXhwIjoxNzc4NTE1MjIyfQ.ffH_5-OQQDxsbl6HUiJYGtrOzudv1NDSBXwfuWqglIk
 
 ### Reject User
 PATCH http://localhost:3000/managers/users/2/reject
