@@ -23,7 +23,7 @@ export class LeaveRequestService {
 
     if (!leaveRequests) {
       throw new NotFoundException('No leave requests found');
-    }
+    } 
     
     return leaveRequests;
   }

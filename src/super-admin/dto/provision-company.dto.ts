@@ -1,26 +1,55 @@
-// src/super-admin/dto/provision-company.dto.ts
-import { IsString, IsEmail, IsObject, IsArray, IsNumber } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsObject, IsArray, ValidateNested, IsNumber, Min, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class JobRoleDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsNumber()
+  @Min(0)
+  baseHourlyRate: number;
+
+  @IsObject()
+  staffingNeeds: Record<string, number>; // ex: { "monday": 2, "tuesday": 2... }
+}
 
 export class ProvisionCompanyDto {
+  // Infos Entreprise
   @IsString()
+  @IsNotEmpty()
   companyName: string;
 
   @IsObject()
-  operatingHours: Record<string, { open: string; close: string; isOpen: boolean }>;
+  operatingHours: Record<string, { open: string; close: string }>;
 
-  @IsArray()
-  roles: {
-    title: string;
-    baseHourlyRate: number;
-    staffingNeeds: Record<string, number>; // { monday: 2, friday: 5 }
-  }[];
+  // Infos Gérant (Le "Seed")
+  @IsString()
+  @IsNotEmpty()
+  managerFirstName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  managerLastName: string;
 
   @IsEmail()
   managerEmail: string;
 
   @IsString()
-  managerFirstName: string;
+  @IsNotEmpty()
+  managerPhone: string;
+
+  // Configuration des métiers
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => JobRoleDto)
+  roles: JobRoleDto[];
 
   @IsString()
-  managerLastName: string;
+  @IsOptional()
+  companyAddress: string;
+
+  @IsString()
+  @IsOptional()
+  companyPhone: string;
 }

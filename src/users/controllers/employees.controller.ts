@@ -1,7 +1,7 @@
 import { Controller, Param, ParseIntPipe, Post, UseGuards, Body, Get, Patch, Delete } from '@nestjs/common';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 import { UserRole } from 'src/common/enums/user-roles.enum';
 import { LeaveRequestService } from 'src/leave-request/leave-request.service';
 import { AvailabilityService } from 'src/availability/availability.service';

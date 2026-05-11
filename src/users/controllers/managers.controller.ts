@@ -3,7 +3,7 @@ import { AvailabilityService } from 'src/availability/availability.service';
 import { LeaveRequestService } from 'src/leave-request/leave-request.service';
 import { SetUserRoleSalaryDTO } from '../dto/set-user-role-salary.dto';
 import { UserRole } from 'src/common/enums/user-roles.enum';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';

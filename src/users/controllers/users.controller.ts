@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Patch, UseGuards, Delete, ParseIntPipe, ForbiddenException } from '@nestjs/common';
-import { UpdateUserInfoDTO }  from 'src/users/dto/update-user.dto';
+import { UpdateUserInfoDTO }  from 'src/users/dto/update-user-info.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Serialize } from 'src/common/interceptors/serialize.interceptor';

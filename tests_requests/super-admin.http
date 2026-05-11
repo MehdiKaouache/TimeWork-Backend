@@ -16,28 +16,15 @@ Content-Type: {{contentType}}
   "password": "SuperPassword123!"
 }
 
-# ==========================================
-# 2. COMPANIES MANAGEMENT
-# ==========================================
-
-### List all companies
-GET {{baseUrl}}/super-admin/companies
-Content-Type: {{contentType}}
-
-### Get company by ID
-GET {{baseUrl}}/super-admin/company/1
-Content-Type: {{contentType}}
 
 # ==========================================
-# 3. PROVISIONING (CREATE COMPANY + MANAGER)
+# 2. PROVISIONING (ONBOARDING)
 # ==========================================
 
 ### Provision a new Client (Company + Admin)
-# Cette requête crée une entreprise, ses rôles et son manager principal.
-# Le mot de passe du manager sera affiché dans la réponse et les logs du backend.
 POST {{baseUrl}}/super-admin/provision
 Content-Type: {{contentType}}
-# Authorization: Bearer {{loginSuperAdmin.response.body.accessToken}}
+Authorization: Bearer {{loginSuperAdmin.response.body.accessToken}}
 
 {
   "companyName": "TechCorp Solutions",
@@ -50,6 +37,10 @@ Content-Type: {{contentType}}
     "saturday": { "open": "00:00", "close": "00:00", "isOpen": false },
     "sunday": { "open": "00:00", "close": "00:00", "isOpen": false }
   },
+  "managerFirstName": "Alice",
+  "managerLastName": "Smith",
+  "managerEmail": "manager@techcorp.com",
+  "managerPhone": "514-555-0199",
   "roles": [
     {
       "title": "Manager",
@@ -61,19 +52,26 @@ Content-Type: {{contentType}}
       "baseHourlyRate": 25.00,
       "staffingNeeds": { "monday": 5, "wednesday": 5 }
     }
-  ],
-  "managerEmail": "manager@techcorp.com",
-  "managerFirstName": "Alice",
-  "managerLastName": "Smith"
+  ]
 }
 
+
 # ==========================================
-# 3. COMPANY MANAGEMENT
+# 3. COMPANIES MANAGEMENT
 # ==========================================
+
+### List all companies
+GET {{baseUrl}}/super-admin/companies
+Authorization: Bearer {{loginSuperAdmin.response.body.accessToken}}
+
+### Get company by ID
+GET {{baseUrl}}/super-admin/company/1
+Authorization: Bearer {{loginSuperAdmin.response.body.accessToken}}
 
 ### Update Company Info
 PATCH {{baseUrl}}/super-admin/company/1
 Content-Type: {{contentType}}
+Authorization: Bearer {{loginSuperAdmin.response.body.accessToken}}
 
 {
   "address": "123 Innovation Drive, Tech City"
@@ -81,3 +79,4 @@ Content-Type: {{contentType}}
 
 ### Delete Company (Soft Delete)
 DELETE {{baseUrl}}/super-admin/company/1
+Authorization: Bearer {{loginSuperAdmin.response.body.accessToken}}

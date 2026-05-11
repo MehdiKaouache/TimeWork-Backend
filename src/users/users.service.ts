@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserStatus } from '../common/enums/user-status.enum';
 import { UserRole } from '../common/enums/user-roles.enum';
-import { UpdateUserInfoDTO } from './dto/update-user.dto';
+import { UpdateUserInfoDTO } from './dto/update-user-info.dto';
 import { SetUserRoleSalaryDTO } from './dto/set-user-role-salary.dto';
 import { HashUtils } from 'src/common/utils/hash.util';
 
@@ -41,7 +41,7 @@ export class UsersService {
      */
     async findAllActive(): Promise<User[]> {
         return await this.usersRepository.find({
-            where: { isActive: true, status: UserStatus.APPROVED }
+            where: { isActive: true }
         });
     }
 
@@ -61,7 +61,7 @@ export class UsersService {
      */
     async findAllApproved(): Promise<User[]> {
         return await this.usersRepository.find({
-            where: { isActive: true, status: UserStatus.APPROVED }
+            where: { status: UserStatus.APPROVED }
         });
     }
 

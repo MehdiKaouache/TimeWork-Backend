@@ -1,53 +1,68 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+
 import { SuperAdminService } from './super-admin.service';
 import { ProvisionCompanyDto } from './dto/provision-company.dto';
-import { Company } from 'src/company/entity/company.entity';
+import { UpdateCompanyDto } from '../company/dto/update-company.dto';
+
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+
+import { UserRole } from 'src/common/enums/user-roles.enum';
 
 @Controller('super-admin')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.SUPER_ADMIN)
 export class SuperAdminController {
-    constructor(private readonly superAdminService: SuperAdminService) {}
 
-    /**
-     * LIST ALL COMPANIES
-     */
-    @Get('companies')
-    async getAllCompanies() {
-        return this.superAdminService.getAllCompanies();
-    }
+  constructor(
+    private readonly superAdminService: SuperAdminService
+  ) {}
 
-    /**
-     * GET ONE COMPANY BY ID
-     */
-    @Get('company/:id')
-    async getCompanyById(@Param('id', ParseIntPipe) id: number) {
-        return this.superAdminService.getCompanyById(id);
-    }
+  @Post('provision')
+  async provision(
+    @Body() data: ProvisionCompanyDto
+  ) {
+    return this.superAdminService.fullClientProvisioning(data);
+  }
 
-    /**
-     * PROVISION A NEW COMPANY AND INITIAL MANAGER
-     * This is the entry point for onboarding a new client.
-     */
-    @Post('provision')
-    async fullClientProvisioning(@Body() data: ProvisionCompanyDto) {
-        return this.superAdminService.fullClientProvisioning(data);
-    }
+  @Get('companies')
+  async findAll() {
+    return this.superAdminService.getAllCompanies();
+  }
 
-    /**
-     * UPDATE COMPANY INFO
-     */
-    @Patch('company/:id')
-    async updateCompanyInfo(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateData: Partial<Company>
-    ) {
-        return this.superAdminService.updateCompanyInfo(id, updateData);
-    }
+  @Get('company/:id')
+  async findOne(
+    @Param('id', ParseIntPipe) id: number
+  ) {
+    return this.superAdminService.getCompanyById(id);
+  }
 
-    /**
-     * DELETE COMPANY (Mark as deleted)
-     */
-    @Delete('company/:id')
-    async deleteCompany(@Param('id', ParseIntPipe) id: number) {
-        return this.superAdminService.deleteCompany(id);
-    }
+  @Patch('company/:id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateData: UpdateCompanyDto
+  ) {
+    return this.superAdminService.updateCompanyInfo(
+      id,
+      updateData
+    );
+  }
+
+  @Delete('company/:id')
+  async remove(
+    @Param('id', ParseIntPipe) id: number
+  ) {
+    return this.superAdminService.deleteCompany(id);
+  }
 }

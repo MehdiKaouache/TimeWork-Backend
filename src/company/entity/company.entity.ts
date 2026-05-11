@@ -43,6 +43,9 @@ export class Company {
     @OneToMany(() => User, (user) => user.company)
     users: User[];
 
+    @OneToMany(() => CompanyJobRole, (jobRole) => jobRole.company)
+    jobRoles: CompanyJobRole[];
+
     // --- Hooks --- //
     
     @BeforeInsert()

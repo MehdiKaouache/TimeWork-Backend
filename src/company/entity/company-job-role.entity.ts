@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../../users/entity/user.entity";
+import { Company } from "./company.entity";
 
 @Entity('company_job_roles')
 export class CompanyJobRole {
@@ -27,4 +28,7 @@ export class CompanyJobRole {
     // Each role can be assigned to many users
     @OneToMany(() => User, (user) => user.jobRole)
     users: User[];
+
+    @ManyToOne(() => Company, (company) => company.jobRoles)
+    company: Company;
 }
