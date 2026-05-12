@@ -11,14 +11,17 @@ import { CreateLeaveRequestDto } from 'src/leave-request/dto/create-leave-reques
 import { UpdateLeaveRequestDto } from 'src/leave-request/dto/update-leave-request.dto';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 
+import { UsersService } from '../users.service';
+
 @Controller('employee')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.EMPLOYEE)
+@Roles(UserRole.EMPLOYEE, UserRole.NEW_HIRE, UserRole.TRAINEE)
 export class EmployeeController {
 
     constructor(
         private readonly availabilityService: AvailabilityService,
-        private readonly leaveRequestService: LeaveRequestService
+        private readonly leaveRequestService: LeaveRequestService,
+        private readonly usersService: UsersService
     ) {}
 
     // --- Availabilities --- //
@@ -43,7 +46,7 @@ export class EmployeeController {
         @Param('id', ParseIntPipe) id: number, 
         @CurrentUser('id') userId: number
     ) {
-        return this.availabilityService.deleteAvailability(id);
+        return this.availabilityService.deleteAvailability(id, userId);
     }
 
     @Patch('availability/:id')
@@ -52,7 +55,7 @@ export class EmployeeController {
         @Body() body: UpdateAvailabilityDto,
         @CurrentUser('id') userId: number
     ) {
-        return this.availabilityService.updateAvailability(id, body);
+        return this.availabilityService.updateAvailability(id, body, userId);
     }
 
     // --- Leave Requests --- //
@@ -67,7 +70,7 @@ export class EmployeeController {
 
     @Get('leave-request')
     getLeaveRequests(
-        @Param('userId', ParseIntPipe) userId: number
+        @CurrentUser('id') userId: number
     ) {
         return this.leaveRequestService.getUserLeaveRequests(userId);
     }
@@ -77,14 +80,32 @@ export class EmployeeController {
         @Param('id', ParseIntPipe) id: number,
         @CurrentUser('id') userId: number
     ) {
-        return this.leaveRequestService.deleteLeaveRequest(id);
+        return this.leaveRequestService.deleteLeaveRequest(id, userId);
     }
 
     @Patch('leave-request/:id')
     updateLeaveRequest(
         @Param('id', ParseIntPipe) id: number,
-        @Body() body: UpdateLeaveRequestDto
+        @Body() body: UpdateLeaveRequestDto,
+        @CurrentUser('id') userId: number
     ) {
-        return this.leaveRequestService.updateLeaveRequest(id, body);
+        return this.leaveRequestService.updateLeaveRequest(id, body, userId);
+    }
+
+    // --- Punch (Time Tracking) --- //
+
+    @Post('check-in')
+    checkIn(@CurrentUser('id') userId: number) {
+        return this.usersService.checkIn(userId);
+    }
+
+    @Post('check-out')
+    checkOut(@CurrentUser('id') userId: number) {
+        return this.usersService.checkOut(userId);
+    }
+
+    @Get('check-status')
+    checkStatus(@CurrentUser('id') userId: number) {
+        return this.usersService.checkStatus(userId);
     }
 }
