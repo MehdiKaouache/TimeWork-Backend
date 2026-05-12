@@ -5,6 +5,7 @@ import { Notification } from './entities/notifications.entity';
 import { User } from '../users/entities/user.entity';
 import { SMSObserver } from './observers/sms.observer';
 import { DatabaseObserver } from './observers/database.observer';
+import { NotificationsController } from './notifications.controller';
 
 @Global()
 @Module({
@@ -15,6 +16,7 @@ import { DatabaseObserver } from './observers/database.observer';
     DatabaseObserver,
   ],
   exports: [NotificationsService],
+  controllers: [NotificationsController],
 })
 export class NotificationsModule implements OnModuleInit { constructor(
     private readonly notificationsService: NotificationsService,
