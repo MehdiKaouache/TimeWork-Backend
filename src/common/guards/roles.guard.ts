@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/roles.decorator';
+import { ROLES_KEY } from 'src/common/decorator/roles.decorator';
 import { UserRole } from 'src/common/enums/user-roles.enum';
 
 /**

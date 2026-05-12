@@ -3,33 +3,50 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user.entity';
+import { User } from './users/entity/user.entity';
 import { AuthModule } from './auth/auth.module';
-import { LeaveRequest } from './leave-request/entities/leave-request.entity';
-import { Availability } from './availability/entities/availability.entity';
+import { LeaveRequest } from './leave-request/entity/leave-request.entity';
+import { Availability } from './availability/entity/availability.entity';
 import { AvailabilityModule } from './availability/availability.module';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
 import { ShiftModule } from './shift/shift.module';
-import { Shift } from './shift/entities/shift.entity';
+import { Shift } from './shift/entity/shift.entity';
 import { ScheduleModule } from './schedule/schedule.module';
-import { Schedule } from './schedule/entities/schedule.entity';
+import { Schedule } from './schedule/entity/schedule.entity';
 import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { join } from 'path';
+import { EjsAdapter } from '@nestjs-modules/mailer/adapters/ejs.adapter';
+import { Company } from './company/entity/company.entity';
+import { CompanyJobRole } from './company/entity/company-job-role.entity';
+import { SuperAdminModule } from './super-admin/super-admin.module';
 
 @Module({
   imports: [
-    MailerModule.forRoot({
-      transport: {
-        host: 'sandbox.smtp.mailtrap.io',
-        port: 2525,
-        auth: {
-          user: 'b57c6e8a2df510',
-          pass: '2235807da3e4f7'
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: 'sandbox.smtp.mailtrap.io',
+          port: 587,
+          auth: {
+            user: configService.get<string>('MAILER_USER'),
+            pass: configService.get<string>('MAILER_PASS'),
+          },
         },
-      },
-      defaults: {
-        from: '"TimeWork Support" <noreply@timework.com>',
-      },
+        defaults: {
+          from: 'TimeWork Support <noreply@timework.com>',
+        },
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new EjsAdapter(),
+          option: {
+            strict: true
+          }
+        }
+      })
     }),
     ConfigModule.forRoot(
     {
@@ -39,9 +56,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 
    TypeOrmModule.forRoot(
     {
-      type: "sqlite",
-      database: "db.sqlite",
-      entities: [User, LeaveRequest, Availability, Shift, Schedule],
+      type: 'sqlite',
+      database: 'db.sqlite',
+      entities: [ User, LeaveRequest, Availability, Shift, Schedule, Company, CompanyJobRole ],
       synchronize: true,
     }
   ),
@@ -50,7 +67,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
     AvailabilityModule,
     LeaveRequestModule,
     ShiftModule,
-    ScheduleModule
+    ScheduleModule,
+    SuperAdminModule
   ],
   controllers: [AppController],
   providers: [AppService],

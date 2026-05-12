@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { LeaveRequestService } from './leave-request.service';
-import { CreateLeaveRequestDto } from './dtos/create-leave-request.dto';
-import { UpdateLeaveRequestDto } from './dtos/update-leave-request.dto';
+import { CreateLeaveRequestDto } from './dto/create-leave-request.dto';
+import { UpdateLeaveRequestDto } from './dto/update-leave-request.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/common/decorator/roles.decorator';
 import { UserRole } from 'src/common/enums/user-roles.enum';
 
 @Controller('leave-request')

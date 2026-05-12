@@ -4,6 +4,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { UsersService } from 'src/users/users.service';
+import { UserStatus } from 'src/common/enums/user-status.enum';
 
 /**
  * Strategy for validating JSON Web Tokens (JWT) from incoming request headers.
@@ -12,20 +13,22 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
 
-  private readonly logger = new Logger(JwtStrategy.name); // Initialize Logger
+  private readonly logger = new Logger(JwtStrategy.name);
   
-    constructor(
-      private readonly configService: ConfigService, private readonly usersService: UsersService
-    ){
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService
+  ){
+    const secret = configService.get<string>('JWT_SECRET');
+
+    if (!secret) {
+      throw new Error('JWT_SECRET is not defined in environment variables'); 
+    }
+
     super({
-      // Extract token from the Authorization: Bearer <token> header
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-
-      // Rejects the request if the token has expired
       ignoreExpiration: false,
-
-      // The secret used to sign the tokens (loaded from .env)
-      secretOrKey: configService.get<string>('JWT_SECRET')
+      secretOrKey: secret
     });
   }
 
@@ -40,11 +43,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const user = await this.usersService.findOne(payload.sub);
     
-    if (!user || !user.refreshToken) {
-      throw new UnauthorizedException('Session expired or logged out');
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
     }    
 
-    // This object becomes accessible via @Request() req -> req.user
+    if (!user.refreshToken) {
+      throw new UnauthorizedException('Session invalidated. Please log in again.');
+    }
+
+    if (!user.isActive || user.status !== UserStatus.APPROVED) {
+       throw new UnauthorizedException('Your account is no longer active or approved.');
+    }
+
     return {
       userId: payload.sub,
       email: payload.email,
