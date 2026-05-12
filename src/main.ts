@@ -30,9 +30,6 @@ async function bootstrap() {
 
   await app.init();
   
-  const usersService = app.get(UsersService);
-  await usersService.createInitialManager();
-
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

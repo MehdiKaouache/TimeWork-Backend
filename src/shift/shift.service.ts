@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateShiftDto } from './dtos/create-shift.dto';
+import { CreateShiftDto } from './dto/create-shift.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Shift } from './entities/shift.entity';
+import { Shift } from './entity/shift.entity';
 import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { UpdateShiftDto } from './dtos/update-shift.dto';
-import { Availability } from 'src/availability/entities/availability.entity';
+import { User } from 'src/users/entity/user.entity';
+import { UpdateShiftDto } from './dto/update-shift.dto';
+import { Availability } from 'src/availability/entity/availability.entity';
 import { DayOfWeek } from 'src/common/enums/day-of-week.enum';
-import { LeaveRequest } from 'src/leave-request/entities/leave-request.entity';
+import { LeaveRequest } from 'src/leave-request/entity/leave-request.entity';
 import { LeaveStatus } from 'src/common/enums/leave-status.enum';
-import { Schedule } from 'src/schedule/entities/schedule.entity';
+import { Schedule } from 'src/schedule/entity/schedule.entity';
 
 @Injectable()
 export class ShiftService {

@@ -1,10 +1,9 @@
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { SignupDTO } from './dtos/signup.dto';
-import { SigninDTO } from './dtos/signin.dto';
-import { UpdateLoginDTO } from './dtos/update_login.dto';
-import { RefreshTokenDTO } from './dtos/refresh_token.dto';
-import type { Request as ExpressRequest } from 'express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { SignupDTO } from './dto/signup.dto';
+import { SigninDTO } from './dto/signin.dto';
+import { UpdateLoginDTO } from './dto/update_login.dto';
+import { RefreshTokenDTO } from './dto/refresh-token.dto';
 
 import { 
   Body, 
@@ -16,6 +15,8 @@ import {
   HttpCode,
   HttpStatus
 } from '@nestjs/common';
+import { ForgotPasswordDTO } from './dto/forgot-password.dto';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
 
 
 @Controller('auth')
@@ -30,7 +31,7 @@ export class AuthController {
      */
     @Post('/signup')
     signup(@Body() body : SignupDTO) {
-        return this.authService.signup(body.firstName, body.lastName, body.email, body.password);
+        return this.authService.signup(body.firstName, body.lastName, body.email, body.password, body.phoneNumber, body.companyCode );
     }
 
     /**
@@ -63,9 +64,8 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
     @Post('/logout')
-    async logout(@Request() req: ExpressRequest) {
-        const userId = (req as any).user.userId;
-        return this.authService.logout(userId);
+    async logout(@Request() req: any) {
+        return this.authService.logout(req.user.userId);
     }
 
     /**
@@ -78,40 +78,41 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('/update-login')
     updateLogin(
-        @Request() req: ExpressRequest,
+        @Request() req: any,
         @Body() body: UpdateLoginDTO
     ) {
         return this.authService.updateLogin(
-            (req as any).user.userId,
+            req.user.userId,
             body
         );
     }
 
     /**
-     * 
-     * @param email 
-     * @returns 
+     * Initiates the password recovery process.
+     * @param body - Object containing the user's email.
+     * @returns A message indicating that a reset link has been sent.
      */
+    @HttpCode(HttpStatus.OK)
     @Post('forgot-password')
-    async forgotPassword(@Body('email') email: string) {
-        return this.authService.forgotPassword(email);
+    async forgotPassword(@Body() body: ForgotPasswordDTO) {
+        return this.authService.forgotPassword(body.email);
     }
 
     /**
-     * 
-     * @param userId 
-     * @param token 
-     * @param newPassword 
-     * @returns 
+     * Resets the user's password using a valid reset token.
+     * @param body - Contains userId, token, and newPassword.
+     * @returns A confirmation message.
      */
+    @HttpCode(HttpStatus.OK)
     @Post('reset-password')
-    async resetPassword(
-        @Body('userId') userId: number,
-        @Body('token') token: string,
-        @Body('newPassword') newPassword: string,
-    ) {
-        return this.authService.resetPassword(userId, token, newPassword);
+    async resetPassword(@Body() body: ResetPasswordDTO) {
+        return this.authService.resetPassword(
+            body.userId,
+            body.token,
+            body.newPassword
+        );
     }
+
     /**
      * Retrieves the profile of the currently authenticated user.
      * @param req - The authenticated request.
@@ -119,9 +120,9 @@ export class AuthController {
      */
     @Get('/whoami')
     @UseGuards(JwtAuthGuard)
-    async whoAmI(@Request() req: ExpressRequest) {
+    async whoAmI(@Request() req: any) {
         return this.authService.whoAmI(
-          (req as any).user.userId,
+            req.user.userId,
         );
     }
 }

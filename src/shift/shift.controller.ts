@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { ShiftService } from './shift.service';
-import { CreateShiftDto } from './dtos/create-shift.dto';
-import { UpdateShiftDto } from './dtos/update-shift.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CreateShiftDto } from './dto/create-shift.dto';
+import { UpdateShiftDto } from './dto/update-shift.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { Roles } from 'src/common/decorator/roles.decorator';
 import { UserRole } from 'src/common/enums/user-roles.enum';
 
 @Controller('shift')

@@ -1,16 +1,48 @@
-### Get user
-GET http://localhost:3000/users/1
-Authorization: Bearer MANAGER_TOKEN
+### Configuration Variables
+@baseUrl = http://localhost:3000
+@contentType = application/json
 
-### Update user
-PATCH http://localhost:3000/users/1
-Authorization: Bearer MANAGER_TOKEN
-Content-Type: application/json
+# ==========================================
+# SUPER ADMIN - PROVISIONING
+# ==========================================
+
+### Provisionner une nouvelle entreprise (Le test complet)
+POST {{baseUrl}}/super-admin/provision
+Content-Type: {{contentType}}
 
 {
-  "firstName": "Updated"
+  "companyName": "Restaurant Le Gourmet",
+  "operatingHours": {
+    "monday": { "open": "09:00", "close": "23:00" },
+    "tuesday": { "open": "09:00", "close": "23:00" },
+    "wednesday": { "open": "09:00", "close": "23:00" },
+    "thursday": { "open": "09:00", "close": "23:00" },
+    "friday": { "open": "09:00", "close": "00:00" },
+    "saturday": { "open": "10:00", "close": "00:00" },
+    "sunday": { "open": "10:00", "close": "21:00" }
+  },
+  "managerFirstName": "Alice",
+  "managerLastName": "Chef",
+  "managerEmail": "alice@legourmet.com",
+  "managerPhone": "514-123-4567",
+  "roles": [
+    {
+      "title": "Cuisinier",
+      "baseHourlyRate": 22.00,
+      "staffingNeeds": { "monday": 2, "friday": 4, "saturday": 4 }
+    },
+    {
+      "title": "Serveur",
+      "baseHourlyRate": 15.00,
+      "staffingNeeds": { "monday": 1, "friday": 3, "saturday": 3 }
+    }
+  ]
 }
 
-### Delete user
-DELETE http://localhost:3000/users/2
-Authorization: Bearer MANAGER_TOKEN
+### Voir toutes les entreprises créées
+GET {{baseUrl}}/super-admin/companies
+Content-Type: {{contentType}}
+
+### Voir les détails d'une entreprise spécifique (Remplace l'ID par celui généré)
+GET {{baseUrl}}/super-admin/company/1
+Content-Type: {{contentType}}

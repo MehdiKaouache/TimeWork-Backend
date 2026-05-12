@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body style="margin: 0; padding: 0; background-color: #f4f7f6;">
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 20px auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
+        <!-- Header -->
+        <div style="background-color: #2c3e50; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">TIMEWORK</h1>
+        </div>
+
+        <!-- Content -->
+        <div style="padding: 30px;">
+            <h2 style="color: #333; margin-top: 0;">Welcome to TimeWork, <%= firstName %>!</h2>
+            <p style="color: #555; line-height: 1.6;">
+                Your management platform for <strong><%= companyName %></strong> is now ready. 
+                You can now log in and start managing your team's shifts and schedules.
+            </p>
+
+            <div style="background-color: #f9f9f9; padding: 20px; border-left: 4px solid #3498db; margin: 25px 0; border-radius: 4px;">
+                <h3 style="margin-top: 0; color: #2c3e50; font-size: 16px;">Your Access Credentials</h3>
+                <p style="margin: 5px 0; font-size: 14px; color: #555;"><strong>Email:</strong> <%= managerEmail %></p>
+                <p style="margin: 5px 0; font-size: 14px; color: #555;"><strong>Temporary Password:</strong> <code style="background: #eee; padding: 2px 5px; border-radius: 3px;"><%= tempPassword %></code></p>
+                <p style="margin: 5px 0; font-size: 14px; color: #555;"><strong>Company Code:</strong> <code style="background: #eee; padding: 2px 5px; border-radius: 3px;"><%= companyCode %></code></p>
+            </div>
+
+            <p style="color: #e67e22; font-size: 14px; font-weight: bold;">
+                Note: For security reasons, please change your password immediately after your first login.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #f4f7f6; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+            <p style="color: #999; font-size: 11px; margin: 0; text-transform: uppercase;">
+                TimeWork Management System
+            </p>
+            <p style="color: #999; font-size: 12px; margin: 5px 0 0 0;">
+                &copy; 2026 TimeWork - Software Development Project
+            </p>
+        </div>
+    </div>
+</body>
+</html>
