@@ -365,4 +365,56 @@ export class UsersService {
         await this.usersRepository.save(manager);
         console.log(`Initial Manager created with email: ${managerEmail} and password: ${rawPassword}`);
     }
+
+    /**
+     * Records a check-in for the user.
+     */
+    async checkIn(userId: number) {
+        const user = await this.findOne(userId);
+        if (!user) throw new NotFoundException('User not found');
+        
+        if (user.isWorking) {
+            throw new BadRequestException('User is already checked in');
+        }
+
+        user.isWorking = true;
+        user.checkInAt = new Date();
+        user.checkOutAt = null;
+        user.workSessionId = Math.random().toString(36).substring(2, 15);
+        await this.usersRepository.save(user);
+
+        return { isWorking: true, checkedInAt: user.checkInAt };
+    }
+
+    /**
+     * Records a check-out for the user.
+     */
+    async checkOut(userId: number) {
+        const user = await this.findOne(userId);
+        if (!user) throw new NotFoundException('User not found');
+
+        if (!user.isWorking) {
+            throw new BadRequestException('User is not checked in');
+        }
+
+        user.isWorking = false;
+        user.checkOutAt = new Date();
+        user.workSessionId = null;
+        await this.usersRepository.save(user);
+
+        return { isWorking: false, checkedOutAt: user.checkOutAt };
+    }
+
+    /**
+     * Gets the current punch status of the user.
+     */
+    async checkStatus(userId: number) {
+        const user = await this.findOne(userId);
+        if (!user) throw new NotFoundException('User not found');
+
+        return {
+            isWorking: user.isWorking,
+            checkedInAt: user.checkInAt,
+        };
+    }
 }

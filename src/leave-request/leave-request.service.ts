@@ -61,11 +61,18 @@ export class LeaveRequestService {
     return this.leaveRequestRepository.save(leaveRequest);
   }
 
-  async updateLeaveRequest(id: number, body: UpdateLeaveRequestDto) {
-    const leaveRequest = await this.leaveRequestRepository.findOne({ where: { id } });
+  async updateLeaveRequest(id: number, body: UpdateLeaveRequestDto, userId?: number) {
+    const leaveRequest = await this.leaveRequestRepository.findOne({ 
+      where: { id },
+      relations: ['user']
+    });
 
     if (!leaveRequest) {
       throw new NotFoundException('Leave request not found');
+    }
+
+    if (userId && leaveRequest.user.id !== userId) {
+      throw new NotFoundException('You do not have permission to update this leave request');
     }
 
     if (leaveRequest.status !== LeaveStatus.PENDING) {
@@ -81,11 +88,18 @@ export class LeaveRequestService {
     return this.leaveRequestRepository.save(leaveRequest);
   }
 
-  async deleteLeaveRequest(id: number) {
-    const leaveRequest = await this.leaveRequestRepository.findOne({ where: { id } });
+  async deleteLeaveRequest(id: number, userId?: number) {
+    const leaveRequest = await this.leaveRequestRepository.findOne({ 
+      where: { id },
+      relations: ['user']
+    });
 
     if (!leaveRequest) {
       throw new NotFoundException('Leave request not found');
+    }
+
+    if (userId && leaveRequest.user.id !== userId) {
+      throw new NotFoundException('You do not have permission to delete this leave request');
     }
 
     await this.leaveRequestRepository.remove(leaveRequest);
