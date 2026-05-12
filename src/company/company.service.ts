@@ -23,7 +23,7 @@ export class CompanyService {
         id,
         isDeleted: false,
       },
-      relations: ['jobRoles'],
+      relations: ['jobRoles', 'users'],
     });
 
     if (!company) {

@@ -147,11 +147,138 @@ export class SuperAdminService implements OnModuleInit {
         return company;
     }
 
-    async updateCompanyInfo(id: number, updateData: Partial<Company>): Promise<Company> {
-        const company = await this.getCompanyById(id);
-        Object.assign(company, updateData);
-        return this.dataSource.getRepository(Company).save(company);
-    }
+async updateCompanyInfo(
+    id: number,
+    updateData: any
+): Promise<Company> {
+
+    return this.dataSource.transaction(async (manager) => {
+
+        const companyRepo =
+            manager.getRepository(Company);
+
+        const userRepo =
+            manager.getRepository(User);
+
+        const roleRepo =
+            manager.getRepository(CompanyJobRole);
+
+        // FIND COMPANY
+
+        const company = await companyRepo.findOne({
+            where: {
+                id,
+                isDeleted: false,
+            },
+            relations: ['users', 'jobRoles'],
+        });
+
+        if (!company) {
+            throw new NotFoundException(
+                'Company not found'
+            );
+        }
+
+        // UPDATE COMPANY
+
+        company.name =
+            updateData.companyName ??
+            company.name;
+
+        company.address =
+            updateData.companyAddress ??
+            company.address;
+
+        company.phoneNumber =
+            updateData.companyPhone ??
+            company.phoneNumber;
+
+        company.operatingHours =
+            updateData.operatingHours ??
+            company.operatingHours;
+
+        await companyRepo.save(company);
+
+        // UPDATE MANAGER
+
+        const managerUser = company.users.find(
+            (u) => u.role === UserRole.MANAGER
+        );
+
+        if (managerUser) {
+
+            managerUser.firstName =
+                updateData.managerFirstName ??
+                managerUser.firstName;
+
+            managerUser.lastName =
+                updateData.managerLastName ??
+                managerUser.lastName;
+
+            managerUser.email =
+                updateData.managerEmail ??
+                managerUser.email;
+
+            managerUser.phoneNumber =
+                updateData.managerPhone ??
+                managerUser.phoneNumber;
+
+            await userRepo.save(managerUser);
+        }
+
+        // UPDATE ROLES
+
+        await roleRepo
+            .createQueryBuilder()
+            .delete()
+            .from(CompanyJobRole)
+            .where('companyId = :id', {
+                id: company.id,
+            })
+            .execute();
+
+        if (
+            updateData.roles &&
+            updateData.roles.length > 0
+        ) {
+
+            const newRoles =
+                updateData.roles.map((role) =>
+                    roleRepo.create({
+                        title: role.title,
+
+                        baseHourlyRate:
+                            Number(role.baseHourlyRate),
+
+                        staffingNeedsPerDay:
+                            role.staffingNeeds,
+
+                        company,
+                    })
+                );
+
+            await roleRepo.save(newRoles);
+        }
+
+        // RETURN UPDATED COMPANY
+
+        const updatedCompany =
+            await companyRepo.findOne({
+                where: {
+                    id: company.id,
+                },
+                relations: ['users', 'jobRoles'],
+            });
+
+        if (!updatedCompany) {
+            throw new NotFoundException(
+                'Updated company not found'
+            );
+        }
+
+        return updatedCompany;
+    });
+}
 
     async deleteCompany(id: number) {
         const company = await this.getCompanyById(id);

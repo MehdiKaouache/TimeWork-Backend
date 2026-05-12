@@ -31,7 +31,7 @@ export class AuthController {
      */
     @Post('/signup')
     signup(@Body() body : SignupDTO) {
-        return this.authService.signup(body.firstName, body.lastName, body.email, body.password, body.phoneNumber);
+        return this.authService.signup(body.firstName, body.lastName, body.email, body.password, body.phoneNumber, body.companyCode );
     }
 
     /**

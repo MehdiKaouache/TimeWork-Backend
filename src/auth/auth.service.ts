@@ -17,6 +17,7 @@ import {
     Logger
 } from '@nestjs/common';
 import { createHash, randomBytes } from 'crypto';
+import { CompanyService } from 'src/company/company.service';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +27,8 @@ export class AuthService {
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService,
         private readonly mailerService: MailerService,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        private readonly companyService: CompanyService
     ){}
 
     /**
@@ -41,13 +43,17 @@ export class AuthService {
      * @throws ConflictException if the email is already in use
      * @throws InternalServerErrorException if the creation process fails
      */
-    async signup(firstName: string, lastName: string, email: string, password: string, phoneNumber: string) {
+    async signup(firstName: string, lastName: string, email: string, password: string, phoneNumber: string, companyCode: string) {
         const normalizedEmail = email.toLowerCase().trim();
         const existingUser = await this.usersService.findUserByEmail(normalizedEmail);
         
         if (existingUser) {
             throw new ConflictException('This email is already registered. Please try logging in instead.');
         }
+
+        const company = await this.companyService.findByCode(
+            companyCode
+        );
 
         const hashedPassword = await HashUtils.hashValue(password);
 
@@ -56,8 +62,9 @@ export class AuthService {
                 firstName.trim(), 
                 lastName.trim(), 
                 email,
-                phoneNumber.trim(),
                 hashedPassword,
+                phoneNumber.trim(),
+                company.id
             );
             
             return {

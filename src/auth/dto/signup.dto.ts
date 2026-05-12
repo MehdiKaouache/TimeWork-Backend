@@ -46,4 +46,14 @@ export class SignupDTO {
     message: 'Please provide a valid phone number (7-20 digits, optional leading +)',
   })
   phoneNumber: string;
+
+  @Transform(({ value }) =>
+  typeof value === 'string'
+    ? value.trim().toUpperCase()
+    : value
+  )
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(50)
+  companyCode: string;
 }

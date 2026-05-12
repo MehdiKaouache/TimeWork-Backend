@@ -139,14 +139,15 @@ export class UsersService {
      * @param {string} phoneNumber - The user's phone number.
      * @returns {Promise<User>} The created User entity.
     */
-    async createUser(firstName: string, lastName: string, email: string, password: string, phoneNumber: string): Promise<User> {
+    async createUser(firstName: string, lastName: string, email: string, password: string, phoneNumber: string, companyId: number): Promise<User> {
 
         const user = this.usersRepository.create({
             firstName, 
             lastName,
             email,
             password,
-            phoneNumber
+            phoneNumber,
+            company: { id: companyId }
         });
 
         return await this.usersRepository.save(user);

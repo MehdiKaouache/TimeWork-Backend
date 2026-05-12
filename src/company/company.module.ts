@@ -11,6 +11,6 @@ import { CompanyController } from './company.controller';
   ],
   providers: [CompanyService],
   controllers: [CompanyController],
-  exports: [CompanyService, TypeOrmModule] // TRÈS IMPORTANT pour le SuperAdmin
+  exports: [CompanyService, TypeOrmModule]
 })
 export class CompanyModule {}

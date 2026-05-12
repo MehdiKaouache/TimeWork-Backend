@@ -12,7 +12,7 @@ import {
 
 import { SuperAdminService } from './super-admin.service';
 import { ProvisionCompanyDto } from './dto/provision-company.dto';
-import { UpdateCompanyDto } from '../company/dto/update-company.dto';
+import { UpdateCompanyDto } from './dto/update-company.dto';
 
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -49,12 +49,12 @@ export class SuperAdminController {
   }
 
   @Patch('company/:id')
-  async update(
+  async updateCompany(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateData: UpdateCompanyDto
   ) {
     return this.superAdminService.updateCompanyInfo(
-      id,
+      Number(id),
       updateData
     );
   }
