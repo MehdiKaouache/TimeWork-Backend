@@ -27,12 +27,28 @@ export class UsersService {
     //     await this.createInitialManager();
     // }
     
+    private adjustIsWorkingStatus(user: User): User {
+        if (user.isWorking && user.checkInAt) {
+            const today = new Date();
+            const checkInDate = new Date(user.checkInAt);
+            if (
+                checkInDate.getFullYear() !== today.getFullYear() ||
+                checkInDate.getMonth() !== today.getMonth() ||
+                checkInDate.getDate() !== today.getDate()
+            ) {
+                user.isWorking = false;
+            }
+        }
+        return user;
+    }
+
     /**
      * Retrieves all users from the database.
      * @returns {Promise<User[]>} An array of User entities.
      */
     async findAll(): Promise<User[]> {
-        return await this.usersRepository.find();
+        const users = await this.usersRepository.find();
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**
@@ -40,9 +56,10 @@ export class UsersService {
      * @returns {Promise<User[]>} An array of active User entities.
      */
     async findAllActive(): Promise<User[]> {
-        return await this.usersRepository.find({
+        const users = await this.usersRepository.find({
             where: { isActive: true }
         });
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**
@@ -50,9 +67,10 @@ export class UsersService {
      * @returns {Promise<User[]>} An array of deactivated User entities.
      */
     async findAllDeactivated(): Promise<User[]> {
-        return await this.usersRepository.find({
+        const users = await this.usersRepository.find({
             where: { isActive: false, status: UserStatus.APPROVED }
         });
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**
@@ -60,9 +78,10 @@ export class UsersService {
      * @returns {Promise<User[]>} An array of approved User entities.
      */
     async findAllApproved(): Promise<User[]> {
-        return await this.usersRepository.find({
+        const users = await this.usersRepository.find({
             where: { status: UserStatus.APPROVED }
         });
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**

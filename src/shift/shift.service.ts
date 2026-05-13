@@ -131,23 +131,40 @@ export class ShiftService {
             }
         }
 
-        const existingShift = await this.shiftRepository.findOne({
+        const existingShifts = await this.shiftRepository.find({
             where: {
                 user: { id: userId },
                 date: date
             }
         });
 
-        if (existingShift) {
-            throw new BadRequestException('User already has a shift for this day');
+        for (const existingShift of existingShifts) {
+            if (startTime < existingShift.endTime && endTime > existingShift.startTime) {
+                throw new BadRequestException("L'employé a déjà un shift en même temps");
+            }
+        }
+
+        const maxCapacity = 4;
+        const totalShiftsForDay = await this.shiftRepository.count({
+            where: { date: date }
+        });
+
+        if (totalShiftsForDay >= maxCapacity) {
+            throw new BadRequestException('Capacité maximale atteinte');
         }
 
 
+        const { scheduleId, ...restBody } = body;
+        const schedule = await this.scheduleRepository.findOne({ where: { id: scheduleId } });
+        if (!schedule) {
+            throw new NotFoundException('Schedule not found');
+        }
+
         const shift = this.shiftRepository.create({
-            ... body,
+            ...restBody,
             date: date,
             user,
-            //schedule
+            schedule,
         });
 
         return this.shiftRepository.save(shift);
