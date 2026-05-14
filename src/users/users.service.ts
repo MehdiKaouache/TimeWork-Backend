@@ -199,12 +199,6 @@ export class UsersService {
 
         const savedUser = await this.usersRepository.save(user);
 
-        await this.notificationsService.notify(
-            savedUser.id,
-            NotificationType.ACCOUNT_CREATED,
-            { name : savedUser.firstName }
-        )
-
         return savedUser
     }
     

@@ -2,10 +2,11 @@ import { Module, Global, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationsService } from './notifications.service';
 import { Notification } from './entities/notifications.entity';
-import { User } from '../users/entities/user.entity';
+import { User } from 'src/users/entity/user.entity';
 import { SMSObserver } from './observers/sms.observer';
 import { DatabaseObserver } from './observers/database.observer';
 import { NotificationsController } from './notifications.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Global()
 @Module({

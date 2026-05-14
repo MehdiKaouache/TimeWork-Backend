@@ -59,6 +59,6 @@ export class SMSObserver implements IObserver {
   }
 
   private async getUserPhoneNumber(userId: number): Promise<string | null> {
-    return "+4385261981"; 
+    return "+14385261981"; 
   }
 }

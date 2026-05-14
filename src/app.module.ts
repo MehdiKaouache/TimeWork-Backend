@@ -58,7 +58,7 @@ import { SuperAdminModule } from './super-admin/super-admin.module';
   TypeOrmModule.forRoot({
     type: 'sqlite',
     database: join(__dirname, '..', 'db.sqlite'), 
-    entities: [ User, LeaveRequest, Availability, Shift, Schedule, Company, CompanyJobRole ],
+    entities: [ User, LeaveRequest, Availability, Shift, Schedule, Company, CompanyJobRole, Notification ],
     synchronize: true
   }),
     UsersModule,
