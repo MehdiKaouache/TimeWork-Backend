@@ -73,11 +73,18 @@ export class AvailabilityService {
     return await this.availabilityRepository.save(availability);
   }
 
-  async updateAvailability(id: number, body: UpdateAvailabilityDto) {
-    const availability = await this.availabilityRepository.findOne({ where: { id } });
+  async updateAvailability(id: number, body: UpdateAvailabilityDto, userId?: number) {
+    const availability = await this.availabilityRepository.findOne({ 
+      where: { id },
+      relations: ['user']
+    });
 
     if (!availability) {
       throw new NotFoundException('Availability not found');
+    }
+
+    if (userId && availability.user.id !== userId) {
+      throw new BadRequestException('You do not have permission to update this availability');
     }
 
     if(body.isAllDay === true) {
@@ -106,11 +113,18 @@ export class AvailabilityService {
     return this.availabilityRepository.save(availability);
   }
 
-  async deleteAvailability(id: number) {
-    const availability = await this.availabilityRepository.findOne({ where: { id } });
+  async deleteAvailability(id: number, userId?: number) {
+    const availability = await this.availabilityRepository.findOne({ 
+      where: { id },
+      relations: ['user']
+    });
 
     if (!availability) {
       throw new NotFoundException('Availability not found');
+    }
+
+    if (userId && availability.user.id !== userId) {
+      throw new BadRequestException('You do not have permission to delete this availability');
     }
 
     await this.availabilityRepository.remove(availability);

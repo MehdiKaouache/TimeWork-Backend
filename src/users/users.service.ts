@@ -30,12 +30,28 @@ export class UsersService {
     //     await this.createInitialManager();
     // }
     
+    private adjustIsWorkingStatus(user: User): User {
+        if (user.isWorking && user.checkInAt) {
+            const today = new Date();
+            const checkInDate = new Date(user.checkInAt);
+            if (
+                checkInDate.getFullYear() !== today.getFullYear() ||
+                checkInDate.getMonth() !== today.getMonth() ||
+                checkInDate.getDate() !== today.getDate()
+            ) {
+                user.isWorking = false;
+            }
+        }
+        return user;
+    }
+
     /**
      * Retrieves all users from the database.
      * @returns {Promise<User[]>} An array of User entities.
      */
     async findAll(): Promise<User[]> {
-        return await this.usersRepository.find();
+        const users = await this.usersRepository.find();
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**
@@ -43,9 +59,10 @@ export class UsersService {
      * @returns {Promise<User[]>} An array of active User entities.
      */
     async findAllActive(): Promise<User[]> {
-        return await this.usersRepository.find({
+        const users = await this.usersRepository.find({
             where: { isActive: true }
         });
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**
@@ -53,9 +70,10 @@ export class UsersService {
      * @returns {Promise<User[]>} An array of deactivated User entities.
      */
     async findAllDeactivated(): Promise<User[]> {
-        return await this.usersRepository.find({
+        const users = await this.usersRepository.find({
             where: { isActive: false, status: UserStatus.APPROVED }
         });
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**
@@ -63,9 +81,10 @@ export class UsersService {
      * @returns {Promise<User[]>} An array of approved User entities.
      */
     async findAllApproved(): Promise<User[]> {
-        return await this.usersRepository.find({
+        const users = await this.usersRepository.find({
             where: { status: UserStatus.APPROVED }
         });
+        return users.map(user => this.adjustIsWorkingStatus(user));
     }
 
     /**
@@ -389,5 +408,57 @@ export class UsersService {
 
         await this.usersRepository.save(manager);
         console.log(`Initial Manager created with email: ${managerEmail} and password: ${rawPassword}`);
+    }
+
+    /**
+     * Records a check-in for the user.
+     */
+    async checkIn(userId: number) {
+        const user = await this.findOne(userId);
+        if (!user) throw new NotFoundException('User not found');
+        
+        if (user.isWorking) {
+            throw new BadRequestException('User is already checked in');
+        }
+
+        user.isWorking = true;
+        user.checkInAt = new Date();
+        user.checkOutAt = null;
+        user.workSessionId = Math.random().toString(36).substring(2, 15);
+        await this.usersRepository.save(user);
+
+        return { isWorking: true, checkedInAt: user.checkInAt };
+    }
+
+    /**
+     * Records a check-out for the user.
+     */
+    async checkOut(userId: number) {
+        const user = await this.findOne(userId);
+        if (!user) throw new NotFoundException('User not found');
+
+        if (!user.isWorking) {
+            throw new BadRequestException('User is not checked in');
+        }
+
+        user.isWorking = false;
+        user.checkOutAt = new Date();
+        user.workSessionId = null;
+        await this.usersRepository.save(user);
+
+        return { isWorking: false, checkedOutAt: user.checkOutAt };
+    }
+
+    /**
+     * Gets the current punch status of the user.
+     */
+    async checkStatus(userId: number) {
+        const user = await this.findOne(userId);
+        if (!user) throw new NotFoundException('User not found');
+
+        return {
+            isWorking: user.isWorking,
+            checkedInAt: user.checkInAt,
+        };
     }
 }

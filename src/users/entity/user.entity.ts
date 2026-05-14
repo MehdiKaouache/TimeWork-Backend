@@ -89,6 +89,19 @@ export class User {
     @Column({ type: 'boolean', default: false })
     isActive: boolean;
 
+    // --- Punch / Working Status ---
+    @Column({ type: 'boolean', default: false })
+    isWorking: boolean;
+
+    @Column({ type: 'datetime', nullable: true })
+    checkInAt: Date | null;
+
+    @Column({ type: 'datetime', nullable: true })
+    checkOutAt: Date | null;
+
+    @Column({ type: 'varchar', nullable: true })
+    workSessionId: string | null;
+
     // --- Finance & HR ---
 
     @Column({
