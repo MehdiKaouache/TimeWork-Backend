@@ -23,10 +23,13 @@ export class LeaveRequestService {
   ) {}
 
   async getAllLeaveRequests() {
-    const leaveRequests = await this.leaveRequestRepository.find({ relations: ['user'] });
+    const leaveRequests = await this.leaveRequestRepository.find({ 
+      relations: ['user'],
+      order: { startDate: 'ASC' }
+    });
 
     if (!leaveRequests) {
-      throw new NotFoundException('No leave requests found');
+      throw new NotFoundException('Aucune demande de congé trouvée');
     } 
     
     return leaveRequests;
@@ -35,11 +38,12 @@ export class LeaveRequestService {
   async getUserLeaveRequests(userId: number) {
     const leaveRequests = await this.leaveRequestRepository.find({
       where: { user: { id: userId } },
-      relations: ['user']
+      relations: ['user'],
+      order: { startDate: 'ASC' }
     });
 
     if (!leaveRequests) {
-      throw new NotFoundException('No leave requests found for the specified user');
+      throw new NotFoundException("Aucune demande de congé trouvée pour l'employé");
     }
 
     return leaveRequests;
@@ -49,11 +53,11 @@ export class LeaveRequestService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Employé introuvable');
     }
 
     if (body.startDate > body.endDate) {
-      throw new NotFoundException('Invalid date range: startDate must be before endDate');
+      throw new NotFoundException('Plage de date invalide : la date de début doit être avant la date de fin');
     }
 
     const leaveRequest = this.leaveRequestRepository.create({
@@ -78,19 +82,19 @@ export class LeaveRequestService {
     });
 
     if (!leaveRequest) {
-      throw new NotFoundException('Leave request not found');
+      throw new NotFoundException('Demande de congé introuvable');
     }
 
     if (userId && leaveRequest.user.id !== userId) {
-      throw new NotFoundException('You do not have permission to update this leave request');
+      throw new NotFoundException("Vous n'avez pas l'autorisation de modifier cette demande");
     }
 
     if (leaveRequest.status !== LeaveStatus.PENDING) {
-      throw new NotFoundException('Only pending leave requests can be updated');
+      throw new NotFoundException('Seules les demandes en attente peuvent être modifiées');
     }
 
     if (body.startDate && body.endDate && body.startDate > body.endDate) {
-      throw new NotFoundException('Invalid date range: startDate must be before endDate');
+      throw new NotFoundException('Plage de date invalide : la date de début doit être avant la date de fin');
     }
   
     Object.assign(leaveRequest, body);
@@ -105,16 +109,16 @@ export class LeaveRequestService {
     });
 
     if (!leaveRequest) {
-      throw new NotFoundException('Leave request not found');
+      throw new NotFoundException('Demande de congé introuvable');
     }
 
     if (userId && leaveRequest.user.id !== userId) {
-      throw new NotFoundException('You do not have permission to delete this leave request');
+      throw new NotFoundException("Vous n'avez pas l'autorisation de supprimer cette demande");
     }
 
     await this.leaveRequestRepository.remove(leaveRequest);
 
-    return { message: 'Leave request deleted successfully' };
+    return { message: 'Demande de congé supprimée avec succès' };
   }
 
   async approveLeaveRequest(id: number) {
@@ -124,11 +128,11 @@ export class LeaveRequestService {
     });
 
     if (!leaveRequest) {
-      throw new NotFoundException('Leave request not found');
+      throw new NotFoundException('Demande de congé introuvable');
     }
 
     if (leaveRequest.status !== LeaveStatus.PENDING) {
-      throw new NotFoundException('Only pending leave requests can be approved');
+      throw new NotFoundException('Seules les demandes en attente peuvent être approuvées');
     }
 
     leaveRequest.status = LeaveStatus.APPROVED;
@@ -149,11 +153,11 @@ export class LeaveRequestService {
     });
 
     if (!leaveRequest) {
-      throw new NotFoundException('Leave request not found');
+      throw new NotFoundException('Demande de congé introuvable');
     }
 
     if (leaveRequest.status !== LeaveStatus.PENDING) {
-      throw new NotFoundException('Only pending leave requests can be rejected');
+      throw new NotFoundException('Seules les demandes en attente peuvent être refusées');
     }
 
     leaveRequest.status = LeaveStatus.REJECTED;

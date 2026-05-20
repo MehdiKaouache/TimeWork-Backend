@@ -98,12 +98,13 @@ export class UsersService {
     }
 
     /**
-     * Retrieves all pending users from the database.
+     * Retrieves all pending users from the database for a specific company.
+     * @param {number} companyId - The ID of the company.
      * @returns {Promise<User[]>} An array of pending User entities.
      */
-    async findPendingUsers(): Promise<User[]> {
+    async findPendingUsers(companyId: number): Promise<User[]> {
         return await this.usersRepository.find({
-            where: { status: UserStatus.PENDING }
+            where: { status: UserStatus.PENDING, company: { id: companyId } }
         });
     }
 
@@ -118,7 +119,7 @@ export class UsersService {
         const user = await this.usersRepository.findOne({ where: { id } });
         
         if (!user) {
-            throw new NotFoundException(`User with ID ${id} not found`);
+            throw new NotFoundException(`Employé avec l'ID ${id} introuvable`);
         }
 
         return user;
@@ -135,7 +136,7 @@ export class UsersService {
         const user = await this.usersRepository.findOne({ where: { employeeNumber } });
         
         if (!user) {
-            throw new NotFoundException(`Employee #${employeeNumber} not found`);
+            throw new NotFoundException(`Employé #${employeeNumber} introuvable`);
         }
 
         return user;
@@ -213,7 +214,7 @@ export class UsersService {
 
         await this.usersRepository.softRemove(user);
 
-        return { message: `User deleted successfully` };
+        return { message: `Employé supprimé avec succès` };
     }
 
     /**
@@ -254,7 +255,7 @@ export class UsersService {
         const user = await this.usersRepository.findOneBy({ id: userId });
         
         if (!user) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException('Employé introuvable');
         }
 
         user.passwordResetToken = hashedToken;
@@ -291,7 +292,7 @@ export class UsersService {
         const user = await this.findOne(id);
 
         if (user.status !== UserStatus.PENDING) {
-            throw new BadRequestException(`User is not in pending status (Current: ${user.status})`);
+            throw new BadRequestException(`L'employé n'est pas en attente (Actuel: ${user.status})`);
         }
 
         user.status = UserStatus.APPROVED;
@@ -307,7 +308,7 @@ export class UsersService {
             { status: 'actif' }
         );
 
-        return { message: `User approved by ${manager.firstName} and activated successfully` };
+        return { message: `Employé approuvé et activé avec succès` };
     }
 
     /**
@@ -321,11 +322,11 @@ export class UsersService {
         const user = await this.findOne(id);
 
         if (user.status === UserStatus.APPROVED) {
-            throw new BadRequestException("User is already approved");
+            throw new BadRequestException("L'employé est déjà approuvé");
         }
 
         if (user.status === UserStatus.REJECTED) {
-            throw new BadRequestException("User is already rejected");
+            throw new BadRequestException("L'employé est déjà refusé");
         }
 
         user.status = UserStatus.REJECTED;
@@ -333,7 +334,7 @@ export class UsersService {
 
         await this.usersRepository.save(user);
 
-        return { message: `User ${user.firstName} ${user.lastName} rejected successfully` };
+        return { message: `Employé ${user.firstName} ${user.lastName} refusé avec succès` };
     }
 
     /**
@@ -362,15 +363,16 @@ export class UsersService {
 
         await this.usersRepository.save(user);
 
-        return { message: `User ${user.firstName} ${user.lastName} role and hourly rate updated successfully` };
+        return { message: `Rôle et salaire horaire mis à jour avec succès` };
     }
     
     /**
-     * Counts the number of pending users.
+     * Counts the number of pending users for a specific company.
+     * @param {number} companyId - The ID of the company.
      * @returns {Promise<number>} A promise resolving to the count of pending users.
      */
-    async countPendingUsers(): Promise<number> {
-        return await this.usersRepository.count({ where: { status: UserStatus.PENDING } });
+    async countPendingUsers(companyId: number): Promise<number> {
+        return await this.usersRepository.count({ where: { status: UserStatus.PENDING, company: { id: companyId } } });
     }
 
     /**
@@ -409,10 +411,10 @@ export class UsersService {
      */
     async checkIn(userId: number) {
         const user = await this.findOne(userId);
-        if (!user) throw new NotFoundException('User not found');
+        if (!user) throw new NotFoundException('Employé introuvable');
         
         if (user.isWorking) {
-            throw new BadRequestException('User is already checked in');
+            throw new BadRequestException("L'employé a déjà pointé");
         }
 
         user.isWorking = true;
@@ -429,10 +431,10 @@ export class UsersService {
      */
     async checkOut(userId: number) {
         const user = await this.findOne(userId);
-        if (!user) throw new NotFoundException('User not found');
+        if (!user) throw new NotFoundException('Employé introuvable');
 
         if (!user.isWorking) {
-            throw new BadRequestException('User is not checked in');
+            throw new BadRequestException("L'employé n'a pas pointé");
         }
 
         user.isWorking = false;
@@ -448,7 +450,7 @@ export class UsersService {
      */
     async checkStatus(userId: number) {
         const user = await this.findOne(userId);
-        if (!user) throw new NotFoundException('User not found');
+        if (!user) throw new NotFoundException('Employé introuvable');
 
         return {
             isWorking: user.isWorking,

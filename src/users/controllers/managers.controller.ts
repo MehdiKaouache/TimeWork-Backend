@@ -42,8 +42,8 @@ export class ManagersController {
     }
 
     @Get('users/pending')
-    async getAllUsersPendingApprouval(){
-        const users = await this.userService.findPendingUsers()
+    async getAllUsersPendingApprouval(@CurrentUser() manager: User){
+        const users = await this.userService.findPendingUsers(manager.companyId)
 
         return users;
     }

@@ -15,26 +15,26 @@ export class ScheduleService {
     async createSchedule(dto: CreateScheduleDto){
         const existing = await this.scheduleRepo.findOneBy({ name: dto.name });
         if(existing){
-            throw new BadRequestException('A schedule with this name already exists');
+            throw new BadRequestException('Un planning avec ce nom existe déjà');
         }
 
         const schedule = this.scheduleRepo.create({
             name: dto.name,
-            startDate: new Date(dto.startDate),
-            endDate: new Date(dto.endDate)
+            startDate: new Date(dto.startDate + 'T12:00:00'),
+            endDate: new Date(dto.endDate + 'T12:00:00')
         });
 
         return await this.scheduleRepo.save(schedule);
     }
 
     async getAllSchedule() {
-        return await this.scheduleRepo.find({ order: { startDate: 'DESC' } });
+        return await this.scheduleRepo.find({ order: { startDate: 'ASC' } });
     }
 
     async findOneSchedule(id: number){
         const schedule = await this.scheduleRepo.findOneBy({id});
         if (!schedule) {
-            throw new NotFoundException('Schedule not found')
+            throw new NotFoundException('Planning introuvable')
         }
         return schedule;
     }
@@ -45,15 +45,15 @@ export class ScheduleService {
         if (dto.name) {
             const existing = await this.scheduleRepo.findOneBy({ name: dto.name });
             if (existing && existing.id !== id) {
-                throw new BadRequestException('Name already in use');
+                throw new BadRequestException('Nom déjà utilisé');
             }
             schedule.name = dto.name;
         }
         if(dto.startDate) {
-            schedule.startDate = new Date(dto.startDate);
+            schedule.startDate = new Date(dto.startDate + 'T12:00:00');
         }
         if (dto.endDate) {
-            schedule.endDate = new Date(dto.endDate);
+            schedule.endDate = new Date(dto.endDate + 'T12:00:00');
         }
         return await this.scheduleRepo.save(schedule);
     }
@@ -62,7 +62,7 @@ export class ScheduleService {
         const schedule = await this.findOneSchedule(id);
         await this.scheduleRepo.remove(schedule);
         return { 
-            message: 'Schedule deleted successfully'
+            message: 'Planning supprimé avec succès'
         };
     }
 }

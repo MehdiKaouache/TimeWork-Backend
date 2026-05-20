@@ -39,10 +39,10 @@ export class AvailabilityService {
   }
 
   async createAvailability(userId: number, body: CreateAvailabilityDto) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['company'] });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Employé introuvable');
     }
 
     const existingAvailability = await this.availabilityRepository.findOne({
@@ -57,8 +57,20 @@ export class AvailabilityService {
     }
 
     if(body.isAllDay === true) {
-      body.startTime = undefined;
-      body.endTime = undefined;
+      if (user.company && user.company.operatingHours) {
+        const dayStr = body.dayOfWeek.toLowerCase();
+        const hours = user.company.operatingHours[dayStr];
+        if (hours && hours.open && hours.close) {
+          body.startTime = hours.open;
+          body.endTime = hours.close;
+        } else {
+          body.startTime = "08:00";
+          body.endTime = "17:00";
+        }
+      } else {
+        body.startTime = "08:00";
+        body.endTime = "17:00";
+      }
     }
 
     if(body.startTime && body.endTime && body.startTime >= body.endTime) {
@@ -76,7 +88,7 @@ export class AvailabilityService {
   async updateAvailability(id: number, body: UpdateAvailabilityDto, userId?: number) {
     const availability = await this.availabilityRepository.findOne({ 
       where: { id },
-      relations: ['user']
+      relations: ['user', 'user.company']
     });
 
     if (!availability) {
@@ -84,13 +96,25 @@ export class AvailabilityService {
     }
 
     if (userId && availability.user.id !== userId) {
-      throw new BadRequestException('You do not have permission to update this availability');
+      throw new NotFoundException("Vous n'avez pas l'autorisation de modifier cette disponibilité");
     }
 
     if(body.isAllDay === true) {
       body.isAllDay = true;
-      body.startTime = undefined;
-      body.endTime = undefined;
+      if (availability.user.company && availability.user.company.operatingHours) {
+        const dayStr = availability.dayOfWeek.toLowerCase();
+        const hours = availability.user.company.operatingHours[dayStr];
+        if (hours && hours.open && hours.close) {
+          body.startTime = hours.open;
+          body.endTime = hours.close;
+        } else {
+          body.startTime = "08:00";
+          body.endTime = "17:00";
+        }
+      } else {
+        body.startTime = "08:00";
+        body.endTime = "17:00";
+      }
     }
 
     if(body.isAllDay === false) {
@@ -101,7 +125,7 @@ export class AvailabilityService {
     const endTime = body.endTime ?? availability.endTime;
 
     if(startTime && endTime && startTime >= endTime) {
-      throw new BadRequestException('Invalid time range: startTime must be before endTime');
+      throw new BadRequestException("L'heure de début doit être avant l'heure de fin");
     }
 
     if(body.startTime) availability.startTime = body.startTime;
@@ -124,11 +148,11 @@ export class AvailabilityService {
     }
 
     if (userId && availability.user.id !== userId) {
-      throw new BadRequestException('You do not have permission to delete this availability');
+      throw new NotFoundException("Vous n'avez pas l'autorisation de supprimer cette disponibilité");
     }
 
     await this.availabilityRepository.remove(availability);
 
-    return { message: 'Availability deleted successfully' };
+    return { message: 'Disponibilité supprimée avec succès' };
   }
 }
