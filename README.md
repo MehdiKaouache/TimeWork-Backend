@@ -1,98 +1,69 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# TimeWork – Backend (API)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST d'une application de **gestion des horaires de travail** pour les entreprises. Projet réalisé en équipe de 3 dans le cadre du cours de développement d'applications Web (Cégep Marie-Victorin, hiver 2026).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Le frontend React se trouve dans le dépôt [TimeWork-Frontend](https://github.com/KersenJ-Project/TimeWork-Frontend).
 
-## Description
+## Ce que fait l'application
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Chaque entreprise cliente dispose de son propre espace, avec trois types d'utilisateurs :
 
-## Project setup
+| Rôle | Ce qu'il peut faire |
+|---|---|
+| **Super-admin** | Créer, modifier et supprimer les entreprises clientes |
+| **Gérant / assistant-gérant** | Créer les horaires et les quarts de travail, suivre les disponibilités, approuver ou refuser les demandes de congé |
+| **Employé** | Consulter ses quarts, saisir ses disponibilités, faire une demande de congé, pointer |
 
+## Technologies
+
+- **NestJS** (Node.js) et **TypeScript**
+- **TypeORM** avec **SQLite**
+- Authentification par **JWT** (jeton d'accès et jeton de rafraîchissement)
+
+## Architecture
+
+L'API est découpée en modules : `Users`, `Auth`, `Availability`, `LeaveRequest`, `Shift`, `Schedule`, `SuperAdmin`. Chaque module sépare trois couches :
+
+- **Entities** : tables de la base de données et relations
+- **Controllers** : points d'entrée de l'API, validation des données (DTO) et contrôle des rôles
+- **Services** : logique métier et accès aux données
+
+## Sécurité
+
+- Guards d'authentification et de rôles sur les routes protégées
+- Mots de passe hachés avec **bcrypt**
+- Validation stricte des données entrantes (`ValidationPipe` avec `whitelist`)
+- **Helmet** et **CORS** configurés
+- Secrets stockés dans un fichier `.env` non versionné
+
+## Routes principales
+
+| Contrôleur | Exemples |
+|---|---|
+| `/auth` | `signup`, `signin`, `refresh`, `logout`, `forgot-password`, `whoami` |
+| `/availability` | disponibilités de l'utilisateur ou de toute l'équipe |
+| `/leave-request` | créer, approuver ou refuser une demande de congé |
+| `/schedules` | créer et consulter les horaires |
+| `/company` | consulter et modifier une entreprise |
+| `/notifications` | consulter et marquer les notifications comme lues |
+
+## Installation
+
+<!-- À vérifier avant de publier : les scripts exacts dans package.json -->
 ```bash
-$ npm install
+git clone https://github.com/MehdiKaouache/TimeWork-Backend.git
+cd TimeWork-Backend
+npm install
 ```
 
-## Compile and run the project
+Créez un fichier `.env` à la racine avec vos valeurs (secret JWT, etc.), puis lancez le serveur :
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev
 ```
 
-## Run tests
+La base SQLite (`db.sqlite`) est créée à la racine du projet, sans serveur de base de données à installer.
 
-```bash
-# unit tests
-$ npm run test
+## Équipe
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Mehdi Kaouache, Anas Benguade et Nyle Kersen Joseph.
